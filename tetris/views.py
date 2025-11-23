@@ -102,21 +102,39 @@ def submit_score(request):
 
     return JsonResponse({"ok": True})
 
+from django.db.models import Q
+from .models import TetrisScore
 
 def leaderboard(request):
     chat_id = request.GET.get("chat_id")
 
-    global_qs = TetrisScore.objects.order_by("-score")[:10]
-    data_global = list(global_qs)
+    # GLOBAL: take best scores across all rows (we already store only best per user+chat)
+    global_qs = (
+        TetrisScore.objects
+        .order_by("-score")[:10]
+    )
 
+    data_global = [
+        {
+            "user_id": obj.user_id,
+            "username": obj.username,
+            "best": obj.score,
+        }
+        for obj in global_qs
+    ]
+
+    # THIS CHAT: only if chat_id provided (group chat)
     data_chat = []
     if chat_id:
-        chat_qs = (
-            TetrisScore.objects.filter(chat_id=chat_id)
-            .values("user_id", "username")
-            .annotate(best=Max("score"))
-            .order_by("-best")[:10]
-        )
-        data_chat = list(chat_qs)
+        data_chat = [
+            {
+                "user_id": obj.user_id,
+                "username": obj.username,
+                "best": obj.score,
+            }
+            for obj in TetrisScore.objects
+                .filter(chat_id=chat_id)
+                .order_by("-score")[:10]
+        ]
 
     return JsonResponse({"global": data_global, "chat": data_chat})

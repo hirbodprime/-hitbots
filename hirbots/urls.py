@@ -11,7 +11,7 @@ urlpatterns = [
 ]
 urlpatterns += [
     re_path(
-        r"^tetris/music/(?P<path>.*)$",
+        r"^games/tetris/music/(?P<path>.*)$",
         serve,
         {
             "document_root": os.path.join(settings.BASE_DIR, "tetris", "music"),
