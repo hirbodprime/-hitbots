@@ -61,25 +61,28 @@ async def tetris_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 
+from telegram import Update
+from telegram.ext import ContextTypes
+
 async def game_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
-    When user taps 'Play' on the game message, Telegram sends callback_query.
-    We must answer it with an URL to our HTML5 game.
+    User taps 'Play' on the game message -> we must answer the callback
+    with the URL of our HTML5 Tetris page.
     """
     query = update.callback_query
-    await query.answer()
 
+    # Safety: ensure this callback is really for our game
     if query.game_short_name != TETRIS_GAME_SHORT_NAME:
+        await query.answer(text="Unknown game.", show_alert=True)
         return
 
     user = query.from_user
     chat = query.message.chat
 
-    url = build_game_url(user, chat)
+    url = build_game_url(user, chat)  # builds https://yourdomain.com/tetris/?user_id=...&chat_id=...
 
-    # answerCallbackQuery with URL: Telegram opens it in a webview
+    # IMPORTANT: answer ONCE, with the URL
     await query.answer(url=url)
-
 
 def format_scores(scores, limit=10):
     lines = []
@@ -122,6 +125,9 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 def build_application() -> Application:
     token = settings.TELEGRAM_BOT_TOKEN
+    if not token:
+        raise RuntimeError("TELEGRAM_BOT_TOKEN not set in environment")
+
     app = ApplicationBuilder().token(token).build()
 
     app.add_handler(CommandHandler("start", start))
@@ -129,10 +135,10 @@ def build_application() -> Application:
     app.add_handler(CommandHandler("top_global", top_global))
     app.add_handler(CommandHandler("top_group", top_group))
 
-    # 🔹 Inline mode
+    # inline games
     app.add_handler(InlineQueryHandler(inline_query))
 
-    # 🔹 Game “Play” button callback
-    app.add_handler(CallbackQueryHandler(game_callback, pattern="^"))
+    # game "Play" button callback
+    app.add_handler(CallbackQueryHandler(game_callback))
 
     return app
