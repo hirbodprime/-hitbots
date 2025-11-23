@@ -34,26 +34,26 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      overflow: hidden;     /* important: page never scrolls */
-      touch-action: none;   /* all touches go to JS, not browser */
+      overflow: hidden;     /* page never scrolls */
+      touch-action: none;   /* all touches go to JS */
     }
 
     .frame {
       width: 100%;
       max-width: 960px;
-      padding: 8px;
+      padding: 6px;
       display: flex;
       justify-content: center;
     }
 
     .cabinet {
-      /* always fully visible on phones */
-      width: min(540px, 100vw - 12px);
+      /* side boxes smaller, center bigger */
+      width: min(540px, 100vw - 10px);
       display: grid;
-      grid-template-columns: 0.22fr 0.56fr 0.22fr;
-      gap: 6px;
-      padding: 10px;
-      border-radius: 24px;
+      grid-template-columns: 0.18fr 0.64fr 0.18fr;
+      gap: 4px;
+      padding: 8px;
+      border-radius: 22px;
       background: linear-gradient(180deg, var(--shell) 0%, #f5f5f5 40%, #d0d0d0 100%);
       border: 4px solid var(--shell-border);
       box-shadow:
@@ -64,15 +64,15 @@
     .side-column {
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 4px;
       justify-content: center;
     }
 
     .side-panel {
-      min-width: 90px;
+      min-width: 68px;              /* MUCH smaller */
       background: linear-gradient(180deg, #efefef 0%, #cfcfcf 100%);
-      border-radius: 14px;
-      padding: 5px 5px 8px;
+      border-radius: 12px;
+      padding: 4px 4px 6px;
       border: 2px solid var(--panel-border);
       box-shadow:
         inset 0 0 0 1px rgba(255, 255, 255, 0.7),
@@ -81,45 +81,45 @@
     }
 
     .side-label {
-      font-size: 11px;
+      font-size: 9px;
       text-transform: uppercase;
-      letter-spacing: .12em;
+      letter-spacing: .14em;
       color: #111827;
-      margin-bottom: 4px;
+      margin-bottom: 2px;
     }
 
     .side-screen {
       background: var(--panel-dark);
       color: var(--label-text);
-      border-radius: 11px;
-      padding: 5px;
-      min-height: 40px;
+      border-radius: 9px;
+      padding: 3px;
+      min-height: 30px;
       display: flex;
       align-items: center;
       justify-content: center;
       font-family: "Courier New", monospace;
-      font-size: 12px;
+      font-size: 10px;
       box-shadow:
-        inset 0 0 10px rgba(0,0,0,.8),
+        inset 0 0 8px rgba(0,0,0,.8),
         inset 0 0 0 1px rgba(148,163,184,.7);
     }
 
     .side-stat-col {
       display: flex;
       flex-direction: column;
-      gap: 3px;
+      gap: 2px;
       width: 100%;
     }
 
     .side-stat {
       background: var(--panel-dark);
       border-radius: 7px;
-      padding: 3px 5px;
+      padding: 2px 4px;
       font-family: "Courier New", monospace;
-      font-size: 11px;
+      font-size: 10px;
       text-align: left;
       box-shadow:
-        inset 0 0 8px rgba(0,0,0,.8),
+        inset 0 0 6px rgba(0,0,0,.8),
         inset 0 0 0 1px rgba(148,163,184,.7);
     }
 
@@ -131,8 +131,8 @@
 
     .tower {
       background: linear-gradient(180deg, #f4f4f4 0%, #d0d0d0 60%, #bdbdbd 100%);
-      border-radius: 22px;
-      padding: 7px 6px 8px;
+      border-radius: 20px;
+      padding: 6px 5px 7px;
       border: 3px solid var(--shell-border);
       box-shadow:
         inset 0 0 0 2px rgba(255,255,255,.7),
@@ -144,13 +144,13 @@
 
     .tower-top {
       background: #3f3f3f;
-      border-radius: 13px 13px 0 0;
-      padding: 3px 7px;
+      border-radius: 12px 12px 0 0;
+      padding: 3px 6px;
       border: 2px solid #1f2937;
       border-bottom: none;
       box-shadow:
         inset 0 0 0 1px rgba(156,163,175,.7),
-        0 4px 10px rgba(0,0,0,.6);
+        0 3px 8px rgba(0,0,0,.6);
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -160,38 +160,38 @@
       font-family: "Courier New", monospace;
       text-transform: uppercase;
       letter-spacing: .18em;
-      font-size: 11px;
+      font-size: 10px;
       color: #f9fafb;
     }
 
     .tower-score-box {
       background: #111827;
-      border-radius: 9px;
-      padding: 2px 6px;
+      border-radius: 8px;
+      padding: 1px 5px;
       font-family: "Courier New", monospace;
-      font-size: 10px;
+      font-size: 9px;
       color: var(--screen-text);
       box-shadow:
-        inset 0 0 10px rgba(0,0,0,.9),
+        inset 0 0 8px rgba(0,0,0,.9),
         inset 0 0 0 1px rgba(148,163,184,.7);
     }
 
     #scoreTop {
       font-weight: 700;
       color: var(--accent-yellow);
-      margin-left: 4px;
+      margin-left: 3px;
     }
 
     .pause-button {
-      width: 24px;
-      height: 20px;
-      border-radius: 8px;
+      width: 22px;
+      height: 18px;
+      border-radius: 7px;
       border: none;
-      margin-left: 5px;
+      margin-left: 4px;
       background: linear-gradient(180deg, #d1d5db 0%, #6b7280 100%);
       box-shadow:
         inset 0 0 0 1px rgba(255,255,255,.8),
-        0 4px 10px rgba(0,0,0,.6);
+        0 3px 8px rgba(0,0,0,.6);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -199,8 +199,8 @@
     }
 
     .pause-bars {
-      width: 10px;
-      height: 11px;
+      width: 9px;
+      height: 10px;
       display: flex;
       justify-content: space-between;
     }
@@ -212,22 +212,22 @@
 
     .tower-inner {
       background: #101010;
-      border-radius: 0 0 16px 16px;
+      border-radius: 0 0 14px 14px;
       border: 2px solid #1f2937;
       border-top: none;
-      padding: 5px;
+      padding: 4px;
       box-shadow:
-        inset 0 0 24px rgba(0,0,0,1),
+        inset 0 0 20px rgba(0,0,0,1),
         inset 0 0 0 1px rgba(75,85,99,.9);
     }
 
     .well-wrap {
       background: #000;
-      border-radius: 8px;
+      border-radius: 7px;
       padding: 3px;
       border: 1px solid #374151;
       box-shadow:
-        inset 0 0 12px rgba(0,0,0,.9);
+        inset 0 0 10px rgba(0,0,0,.9);
     }
 
     #tetris {
@@ -235,12 +235,12 @@
       width: 100%;
       height: auto;
       background: #000;
-      touch-action: none;  /* avoid browser gestures */
+      touch-action: none;
     }
 
     #nextCanvas, #holdCanvas {
-      width: 70px;
-      height: 60px;
+      width: 54px;
+      height: 44px;
     }
 
     .overlay {
@@ -264,17 +264,29 @@
       box-shadow:
         0 18px 40px rgba(0,0,0,.9),
         inset 0 0 0 1px rgba(156,163,175,.8);
-      padding: 14px 16px 16px;
+      padding: 12px 14px 14px;
       color: #f9fafb;
       text-align: center;
       font-size: 13px;
     }
 
     .modal-title {
-      font-size: 16px;
+      font-size: 15px;
       letter-spacing: .16em;
       text-transform: uppercase;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
+    }
+
+    .modal-hint {
+      margin-top: 8px;
+      font-size: 11px;
+      text-align: left;
+      line-height: 1.4;
+      color: #e5e7eb;
+    }
+
+    .modal-hint strong {
+      color: var(--accent-yellow);
     }
 
     .modal-btn-row {
@@ -288,8 +300,8 @@
     .btn {
       border: none;
       border-radius: 999px;
-      padding: 7px 18px;
-      font-size: 13px;
+      padding: 6px 16px;
+      font-size: 12px;
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: .08em;
@@ -302,11 +314,6 @@
     .btn-primary {
       background: linear-gradient(180deg, #34d399 0%, #059669 100%);
       color: #022c22;
-    }
-
-    .btn-neutral {
-      background: linear-gradient(180deg, #e5e7eb 0%, #9ca3af 100%);
-      color: #111827;
     }
 
     .btn-danger {
@@ -323,7 +330,7 @@
       <div class="side-panel">
         <div class="side-label">Hold</div>
         <div class="side-screen">
-          <canvas id="holdCanvas" width="70" height="60"></canvas>
+          <canvas id="holdCanvas" width="54" height="44"></canvas>
         </div>
       </div>
       <div class="side-panel">
@@ -360,34 +367,31 @@
       <div class="side-panel">
         <div class="side-label">Next</div>
         <div class="side-screen">
-          <canvas id="nextCanvas" width="70" height="60"></canvas>
-        </div>
-      </div>
-      <div class="side-panel">
-        <div class="side-label">Hint</div>
-        <div class="side-screen">
-          <div style="font-size:11px;line-height:1.4;text-align:left;">
-            • Swipe left/right: move<br>
-            • Swipe down: drop (fast = hard drop)<br>
-            • Swipe up: hold / swap<br>
-            • Tap: rotate
-          </div>
+          <canvas id="nextCanvas" width="54" height="44"></canvas>
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- PAUSE MENU -->
+<!-- PAUSE MENU (with controls hint) -->
 <div class="overlay hidden" id="pauseOverlay">
   <div class="modal">
     <div class="modal-title">Paused</div>
     <div>Game is paused.</div>
     <div class="modal-btn-row">
       <button class="btn btn-primary" id="btnResume">Resume</button>
-    </div>
-    <div class="modal-btn-row">
       <button class="btn btn-danger" id="btnQuit">Quit</button>
+    </div>
+
+    <div class="modal-hint">
+      <strong>Controls:</strong><br>
+      • Swipe left / right: move piece<br>
+      • Swipe down slowly: soft drop<br>
+      • Swipe down fast: hard drop<br>
+      • Swipe up: Hold / swap piece<br>
+      • Tap: rotate<br>
+      • Keyboard: arrows + Space (desktop)
     </div>
   </div>
 </div>
@@ -410,7 +414,7 @@
 
   function resizeCanvas() {
     const w = canvas.parentElement.clientWidth - 4;
-    const width = Math.max(135, Math.min(w, 220));
+    const width = Math.max(150, Math.min(w, 260));   // bigger playfield now
     const height = width * 2;
     canvas.width = width;
     canvas.height = height;
@@ -519,7 +523,7 @@
       this.score = 0;
       this.lines = 0;
       this.level = 1;
-      this.dropInterval = 650;
+      this.dropInterval = 650;        // will get faster with level
       this.dropCounter = 0;
       this.lastTime = 0;
       this.gameOver = false;
@@ -537,7 +541,7 @@
 
     hold(){
       if (this.paused || this.gameOver) return;
-      if (this.holdUsed) return;
+      if (this.holdUsed) return;  // only once per piece
       this.holdUsed = true;
 
       if (!this.holdShape){
@@ -561,8 +565,8 @@
       const m = cloneMatrix(this.holdShape);
       const rows = m.length, cols = m[0].length;
       const cell = Math.min(
-        (holdCanvas.width-8)/cols,
-        (holdCanvas.height-8)/rows
+        (holdCanvas.width-6)/cols,
+        (holdCanvas.height-6)/rows
       );
       const ox = (holdCanvas.width-cols*cell)/2;
       const oy = (holdCanvas.height-rows*cell)/2;
@@ -587,8 +591,8 @@
       const m = cloneMatrix(this.nextShape);
       const rows = m.length, cols = m[0].length;
       const cell = Math.min(
-        (nextCanvas.width-8)/cols,
-        (nextCanvas.height-8)/rows
+        (nextCanvas.width-6)/cols,
+        (nextCanvas.height-6)/rows
       );
       const ox = (nextCanvas.width-cols*cell)/2;
       const oy = (nextCanvas.height-rows*cell)/2;
@@ -651,7 +655,7 @@
         this.score += pts*this.level;
         this.lines += cleared;
         this.level = 1 + Math.floor(this.lines/10);
-        this.dropInterval = Math.max(120,650-(this.level-1)*40);
+        this.dropInterval = Math.max(120,650-(this.level-1)*40);  // auto speed-up
         this.updateHUD();
       }
     }
@@ -670,7 +674,7 @@
     lockPiece(){
       this.merge(this.piece);
       this.sweep();
-      this.holdUsed = false;  // can hold again next piece
+      this.holdUsed = false;
       this.spawnFromNext();
       if (this.collides(this.piece)){
         this.gameOver = true;
@@ -706,7 +710,7 @@
       // board
       this.drawMatrix(this.matrix,{x:0,y:0});
 
-      // ghost
+      // ghost shadow
       const ghostPos={x:this.piece.pos.x,y:this.piece.pos.y};
       while(!this.collides({matrix:this.piece.matrix,pos:{x:ghostPos.x,y:ghostPos.y+1}})){
         ghostPos.y++;
@@ -788,12 +792,14 @@
     else if(e.key==="Escape") openPause();
   });
 
-  // Simple mobile gestures:
-  // swipe left/right: move (multiple columns if needed)
-  // swipe down: soft / hard drop depending on speed
-  // swipe up: hold
-  // tap: rotate
-  let touchActive=false,startX=0,startY=0,startTime=0;
+  // MOBILE TOUCH:
+  // - drag left/right: smooth horizontal movement
+  // - hold finger: continuous fast soft drop
+  // - swipe down fast: hard drop
+  // - swipe down slow: soft drop
+  // - swipe up: hold / swap
+  // - tap: rotate
+  let touchActive=false,startX=0,startY=0,startTime=0,dragLastX=0,holdDropId=null;
 
   canvas.addEventListener("touchstart", e=>{
     if(board.gameOver) return;
@@ -801,19 +807,49 @@
     const r=canvas.getBoundingClientRect();
     startX=t.clientX-r.left;
     startY=t.clientY-r.top;
+    dragLastX = startX;
     startTime=performance.now();
     touchActive=true;
+
+    // continuous fast soft drop while finger is pressed
+    holdDropId = setInterval(()=>{
+      if(!board.gameOver && !board.paused){
+        board.softDropStep();
+      }
+    },90);
+
     e.preventDefault();
   });
 
   canvas.addEventListener("touchmove", e=>{
-    if(!touchActive) return;
-    e.preventDefault(); // do nothing during move, only on end
+    if(!touchActive || board.gameOver) return;
+    const t=e.touches[0];
+    const r=canvas.getBoundingClientRect();
+    const x=t.clientX-r.left;
+    const y=t.clientY-r.top;
+
+    const dx = x - dragLastX;
+    const stepX = BLOCK * 0.6;
+
+    // smooth drag for horizontal movement
+    if (dx > stepX) {
+      let steps = Math.floor(dx / stepX);
+      while (steps-- > 0) board.piece.move(1,0);
+      dragLastX = x;
+    } else if (dx < -stepX) {
+      let steps = Math.floor(-dx / stepX);
+      while (steps-- > 0) board.piece.move(-1,0);
+      dragLastX = x;
+    }
+
+    e.preventDefault();
   });
 
   canvas.addEventListener("touchend", e=>{
-    if(!touchActive||board.gameOver) return;
+    if(!touchActive || board.gameOver) return;
     touchActive=false;
+    if (holdDropId){ clearInterval(holdDropId); holdDropId=null; }
+
     const r=canvas.getBoundingClientRect();
     const t=e.changedTouches[0];
     const x=t.clientX-r.left;
@@ -824,22 +860,20 @@
 
     const absX=Math.abs(dx), absY=Math.abs(dy);
 
-    if(absY>absX && dy<-25){
+    if(absY>absX && dy<-22){
       // swipe up => hold
       board.hold();
-    } else if(absX>absY && absX>18){
-      // horizontal move
-      const dir = dx>0 ? 1 : -1;
-      const steps = Math.max(1, Math.round(absX/(BLOCK*0.9)));
-      for(let i=0;i<steps;i++) board.piece.move(dir,0);
-    } else if(dy>18){
-      const speed = dy/dt; // px per ms
+    } else if(absY>absX && dy>18){
+      const speed = dy/dt;
       if(speed>0.8 && dy>45) board.hardDrop();
       else board.softDropStep();
+    } else if(absX>absY && absX>10){
+      // horizontal swipe end: already moved on move, so nothing extra
     } else {
-      // simple tap
+      // tap => rotate
       if(!board.paused) board.piece.rotate(1);
     }
+
     e.preventDefault();
   });
 
