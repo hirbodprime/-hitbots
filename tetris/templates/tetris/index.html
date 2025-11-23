@@ -11,16 +11,11 @@
       --bg-bottom: #050517;
       --shell: #dedede;
       --shell-border: #a0a0a0;
-      --inner-shell: #c0c0c0;
       --panel-dark: #2b2b2b;
       --panel-border: #707070;
       --label-text: #efefef;
-      --hud-text: #111827;
-      --hud-sub: #9ca3af;
       --screen-bg: #111827;
       --screen-text: #e5e7eb;
-      --accent-green: #3ba83b;
-      --accent-orange: #f97316;
       --accent-yellow: #facc15;
     }
 
@@ -39,20 +34,24 @@
       display: flex;
       justify-content: center;
       align-items: center;
+      overflow-x: auto; /* allow horizontal scroll on narrow phones */
     }
 
     .frame {
-      max-width: 960px;
       width: 100%;
+      max-width: 960px;
       padding: 10px;
       display: flex;
       justify-content: center;
     }
 
     .cabinet {
+      /* fixed-ish width so side panels stay left/right */
+      width: 680px;
+      min-width: 680px;
       display: grid;
-      grid-template-columns: auto minmax(220px, 260px) auto;
-      gap: 8px;
+      grid-template-columns: 1fr minmax(230px, 260px) 1fr;
+      gap: 10px;
       padding: 10px;
       border-radius: 24px;
       background: linear-gradient(180deg, var(--shell) 0%, #f5f5f5 40%, #d0d0d0 100%);
@@ -62,30 +61,15 @@
         inset 0 0 0 2px rgba(255, 255, 255, 0.7);
     }
 
-    @media (max-width: 768px) {
-      .cabinet {
-        grid-template-columns: 1fr;
-        grid-template-rows: auto auto auto;
-        align-items: center;
-      }
-    }
-
     .side-column {
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 10px;
       justify-content: center;
     }
 
-    @media (max-width: 768px) {
-      .side-column {
-        flex-direction: row;
-        justify-content: center;
-      }
-    }
-
     .side-panel {
-      min-width: 90px;
+      min-width: 120px;
       background: linear-gradient(180deg, #efefef 0%, #cfcfcf 100%);
       border-radius: 16px;
       padding: 6px 6px 10px;
@@ -109,18 +93,18 @@
       color: var(--label-text);
       border-radius: 12px;
       padding: 6px;
-      min-height: 40px;
+      min-height: 48px;
       display: flex;
       align-items: center;
       justify-content: center;
       font-family: "Courier New", monospace;
       font-size: 13px;
       box-shadow:
-        inset 0 0 10px rgba(0, 0, 0, .8),
-        inset 0 0 0 1px rgba(148, 163, 184, .7);
+        inset 0 0 10px rgba(0,0,0,.8),
+        inset 0 0 0 1px rgba(148,163,184,.7);
     }
 
-    .side-stat-row {
+    .side-stat-col {
       display: flex;
       flex-direction: column;
       gap: 4px;
@@ -129,7 +113,6 @@
 
     .side-stat {
       background: var(--panel-dark);
-      color: var(--label-text);
       border-radius: 8px;
       padding: 4px 6px;
       font-family: "Courier New", monospace;
@@ -137,7 +120,7 @@
       text-align: left;
       box-shadow:
         inset 0 0 8px rgba(0,0,0,.8),
-        inset 0 0 0 1px rgba(148, 163, 184, .7);
+        inset 0 0 0 1px rgba(148,163,184,.7);
     }
 
     .side-stat span {
@@ -159,7 +142,6 @@
       display: flex;
       flex-direction: column;
       align-items: stretch;
-      min-width: 220px;
     }
 
     .tower-top {
@@ -258,7 +240,12 @@
       background: #000;
     }
 
-    /* Overlay / modals --------------------------------------------------- */
+    #nextCanvas {
+      width: 70px;
+      height: 90px;
+    }
+
+    /* Overlays ----------------------------------------------------------- */
 
     .overlay {
       position: fixed;
@@ -297,7 +284,6 @@
       font-size: 13px;
       color: #e5e7eb;
       margin-bottom: 12px;
-      text-align: center;
     }
 
     .modal-body small {
@@ -349,8 +335,6 @@
       font-size: 11px;
     }
 
-    /* Slides inside "How to play" */
-
     .slide-graphic {
       margin: 8px auto 6px;
       width: 80%;
@@ -378,12 +362,7 @@
       margin-top: 6px;
       color: #e5e7eb;
     }
-
-    .slide-caption strong {
-      color: var(--accent-yellow);
-    }
-
-    /* Options panel */
+    .slide-caption strong { color: var(--accent-yellow); }
 
     .options-group {
       text-align: left;
@@ -405,7 +384,7 @@
 <body>
 <div class="frame">
   <div class="cabinet">
-    <!-- LEFT SIDE: HOLD / LEVEL / LINES -->
+    <!-- LEFT SIDE -->
     <div class="side-column">
       <div class="side-panel">
         <div class="side-label">Hold</div>
@@ -415,14 +394,14 @@
       </div>
       <div class="side-panel">
         <div class="side-label">Stats</div>
-        <div class="side-screen side-stat-row">
+        <div class="side-screen side-stat-col">
           <div class="side-stat">LEVEL <span id="level">1</span></div>
           <div class="side-stat">LINES <span id="lines">0</span></div>
         </div>
       </div>
     </div>
 
-    <!-- CENTER: TOWER -->
+    <!-- CENTER -->
     <div class="tower">
       <div class="tower-top">
         <div class="tower-title">tetris</div>
@@ -431,9 +410,7 @@
             SCORE <span id="scoreTop">0</span>
           </div>
           <button class="pause-button" id="pauseBtn">
-            <div class="pause-bars">
-              <span></span><span></span>
-            </div>
+            <div class="pause-bars"><span></span><span></span></div>
           </button>
         </div>
       </div>
@@ -444,19 +421,19 @@
       </div>
     </div>
 
-    <!-- RIGHT SIDE: NEXT / HINT -->
+    <!-- RIGHT SIDE -->
     <div class="side-column">
       <div class="side-panel">
         <div class="side-label">Next</div>
         <div class="side-screen">
-          <span style="font-size:11px;color:#6b7280;">(preview soon)</span>
+          <canvas id="nextCanvas" width="70" height="90"></canvas>
         </div>
       </div>
       <div class="side-panel">
         <div class="side-label">Hint</div>
         <div class="side-screen">
           <div style="font-size:11px;line-height:1.4;">
-            Swipe to move · tap sides to rotate · swipe down to drop
+            Drag or swipe to move. Tap sides to rotate.
           </div>
         </div>
       </div>
@@ -464,15 +441,11 @@
   </div>
 </div>
 
-<!-- OVERLAYS -------------------------------------------------------------->
-
-<!-- Pause menu -->
+<!-- PAUSE MENU -->
 <div class="overlay hidden" id="pauseOverlay">
   <div class="modal">
     <div class="modal-title">Paused</div>
-    <div class="modal-body">
-      Game is paused.
-    </div>
+    <div class="modal-body">Game is paused.</div>
     <div class="modal-btn-row">
       <button class="btn btn-primary" id="btnResume">Resume</button>
     </div>
@@ -486,20 +459,19 @@
   </div>
 </div>
 
-<!-- How to play (slides for Smart / Swipe control) -->
+<!-- HOW TO PLAY -->
 <div class="overlay hidden" id="howToOverlay">
   <div class="modal">
-    <div class="modal-title" id="howToTitle">Smart Control</div>
+    <div class="modal-title" id="howToTitle">Smart control</div>
     <div class="modal-body" id="howToText">
-      Drag your finger horizontally – the piece follows the path.  
-      Release to lock it where the ghost position is.
+      Drag your finger horizontally to choose a column.<br>
+      Slide down to lower the piece. Fast downward swipe slams it down.
     </div>
     <div class="slide-graphic">
       <div class="slide-graphic-grid"></div>
-      <!-- We keep this abstract; just suggest grid & movement -->
     </div>
     <div class="slide-caption" id="howToCaption">
-      <strong>Smart control:</strong> drag to choose a column, then lift for a fast drop.
+      <strong>Smart:</strong> slow drag = slow fall, fast drag down = hard drop.
     </div>
     <div class="modal-btn-row">
       <button class="btn btn-neutral btn-small" id="btnSlidePrev">&lt;</button>
@@ -509,23 +481,23 @@
   </div>
 </div>
 
-<!-- Options (choose Smart / Swipe control) -->
+<!-- OPTIONS -->
 <div class="overlay hidden" id="optionsOverlay">
   <div class="modal">
     <div class="modal-title">Options</div>
     <div class="modal-body">
-      Choose touch control style (desktop still uses keyboard).
+      Choose touch control style (desktop uses keyboard).
       <div class="options-group">
         <label>
           <input type="radio" name="controlMode" value="smart">
-          Smart control – drag piece and release to drop.
+          Smart control – drag to move, slow drag down to fall, fast drag down to hard drop.
         </label>
         <label>
           <input type="radio" name="controlMode" value="swipe">
-          Swipe control – swipe to move / drop, tap sides to rotate.
+          Swipe control – swipe to move/drop, tap sides to rotate.
         </label>
       </div>
-      <small>Setting is saved on this device.</small>
+      <small>Saved on this device.</small>
     </div>
     <div class="modal-btn-row">
       <button class="btn btn-primary" id="btnOptionsSave">Save</button>
@@ -541,14 +513,16 @@
 
   const canvas = document.getElementById("tetris");
   const ctx = canvas.getContext("2d");
+  const nextCanvas = document.getElementById("nextCanvas");
+  const nextCtx = nextCanvas.getContext("2d");
 
   const COLS = 10;
   const ROWS = 20;
   let BLOCK = 10;
 
   function resizeCanvas() {
-    const towerWidth = canvas.parentElement.clientWidth;
-    const width = Math.max(160, Math.min(towerWidth - 8, 280));
+    const w = canvas.parentElement.clientWidth - 8;
+    const width = Math.max(150, Math.min(w, 260));
     const height = width * 2;
     canvas.width = width;
     canvas.height = height;
@@ -600,7 +574,16 @@
   };
   const SHAPE_KEYS = Object.keys(SHAPES);
 
-  function createMatrix(w,h) {
+  function randomShapeMatrix() {
+    const key = SHAPE_KEYS[(Math.random() * SHAPE_KEYS.length) | 0];
+    return SHAPES[key];
+  }
+
+  function cloneMatrix(m) {
+    return m.map(row => [...row]);
+  }
+
+  function createMatrix(w, h) {
     const m = [];
     while (h--) m.push(new Array(w).fill(0));
     return m;
@@ -613,19 +596,15 @@
   }
 
   class Piece {
-    constructor(board) {
+    constructor(board, matrix) {
       this.board = board;
-      this.spawn();
-    }
-    spawn() {
-      const key = SHAPE_KEYS[(Math.random()*SHAPE_KEYS.length)|0];
-      this.matrix = SHAPES[key].map(row => [...row]);
+      this.matrix = cloneMatrix(matrix);
       this.pos = {
-        x: (COLS/2|0) - (this.matrix[0].length/2|0),
+        x: (COLS / 2 | 0) - (this.matrix[0].length / 2 | 0),
         y: 0
       };
     }
-    move(dx,dy) {
+    move(dx, dy) {
       this.pos.x += dx;
       this.pos.y += dy;
       if (this.board.collides(this)) {
@@ -654,7 +633,8 @@
   class Board {
     constructor() {
       this.matrix = createMatrix(COLS, ROWS);
-      this.piece = new Piece(this);
+      this.nextShape = randomShapeMatrix();
+      this.spawnPiece();
       this.score = 0;
       this.lines = 0;
       this.level = 1;
@@ -664,6 +644,42 @@
       this.gameOver = false;
       this.paused = false;
       this.updateHUD();
+      this.drawNext();
+    }
+
+    spawnPiece() {
+      this.piece = new Piece(this, this.nextShape);
+      this.nextShape = randomShapeMatrix();
+      this.drawNext();
+    }
+
+    drawNext() {
+      nextCtx.clearRect(0,0,nextCanvas.width,nextCanvas.height);
+      const matrix = cloneMatrix(this.nextShape);
+      const rows = matrix.length;
+      const cols = matrix[0].length;
+      const cell = Math.min(
+        (nextCanvas.width - 10) / cols,
+        (nextCanvas.height - 10) / rows
+      );
+      const offsetX = (nextCanvas.width - cols * cell) / 2;
+      const offsetY = (nextCanvas.height - rows * cell) / 2;
+      for (let y=0;y<rows;y++){
+        for (let x=0;x<cols;x++){
+          const v = matrix[y][x];
+          if (!v) continue;
+          const px = offsetX + x * cell;
+          const py = offsetY + y * cell;
+          nextCtx.fillStyle = COLORS[v] || "#e5e7eb";
+          nextCtx.fillRect(px+0.5,py+0.5,cell-1,cell-1);
+          const g = nextCtx.createLinearGradient(px,py,px,py+cell);
+          g.addColorStop(0,"rgba(255,255,255,0.4)");
+          g.addColorStop(0.4,"rgba(255,255,255,0)");
+          g.addColorStop(1,"rgba(0,0,0,0.5)");
+          nextCtx.fillStyle = g;
+          nextCtx.fillRect(px+0.5,py+0.5,cell-1,cell-1);
+        }
+      }
     }
 
     updateHUD() {
@@ -675,12 +691,12 @@
     collides(piece) {
       const m = piece.matrix;
       const o = piece.pos;
-      for (let y=0; y<m.length; y++) {
-        for (let x=0; x<m[y].length; x++) {
+      for (let y=0;y<m.length;y++){
+        for (let x=0;x<m[y].length;x++){
           if (m[y][x] !== 0) {
-            const nx = x+o.x;
-            const ny = y+o.y;
-            if (nx<0 || nx>=COLS || ny<0 || ny>=ROWS) return true;
+            const nx = x + o.x;
+            const ny = y + o.y;
+            if (nx < 0 || nx >= COLS || ny < 0 || ny >= ROWS) return true;
             if (this.matrix[ny][nx] !== 0) return true;
           }
         }
@@ -689,30 +705,30 @@
     }
 
     merge(piece) {
-      piece.matrix.forEach((row,y) => {
-        row.forEach((v,x) => {
-          if (v!==0) this.matrix[y+piece.pos.y][x+piece.pos.x]=v;
+      piece.matrix.forEach((row,y)=>{
+        row.forEach((v,x)=>{
+          if (v!==0) this.matrix[y+piece.pos.y][x+piece.pos.x] = v;
         });
       });
     }
 
     sweep() {
       let cleared = 0;
-      outer: for (let y=ROWS-1;y>=0;y--) {
-        for (let x=0;x<COLS;x++) {
-          if (this.matrix[y][x]===0) continue outer;
+      outer: for (let y=ROWS-1;y>=0;y--){
+        for (let x=0;x<COLS;x++){
+          if (this.matrix[y][x] === 0) continue outer;
         }
         const row = this.matrix.splice(y,1)[0].fill(0);
         this.matrix.unshift(row);
         y++;
         cleared++;
       }
-      if (cleared>0) {
+      if (cleared > 0) {
         const points = [0,40,100,300,1200][cleared] || 0;
         this.score += points * this.level;
         this.lines += cleared;
-        this.level = 1 + Math.floor(this.lines/10);
-        this.dropInterval = Math.max(120, 650 - (this.level-1)*40);
+        this.level = 1 + Math.floor(this.lines / 10);
+        this.dropInterval = Math.max(120, 650 - (this.level - 1) * 40);
         this.updateHUD();
       }
     }
@@ -723,7 +739,7 @@
       this.lockPiece();
     }
 
-    softDrop() {
+    softDropStep() {
       if (this.gameOver || this.paused) return;
       if (!this.piece.move(0,1)) {
         this.lockPiece();
@@ -733,7 +749,7 @@
     lockPiece() {
       this.merge(this.piece);
       this.sweep();
-      this.piece = new Piece(this);
+      this.spawnPiece();
       if (this.collides(this.piece)) {
         this.gameOver = true;
         this.sendScore();
@@ -744,49 +760,38 @@
       if (this.gameOver || this.paused) return;
       this.dropCounter += dt;
       if (this.dropCounter > this.dropInterval) {
-        this.softDrop();
+        this.softDropStep();
         this.dropCounter = 0;
       }
     }
 
     draw() {
-      // background grid
       ctx.fillStyle = "#000";
       ctx.fillRect(0,0,canvas.width,canvas.height);
 
-      const gridSizeX = BLOCK;
-      const gridSizeY = BLOCK;
-
       ctx.strokeStyle = "rgba(55,65,81,0.4)";
       ctx.lineWidth = 0.5;
-      for (let x=0;x<=COLS;x++) {
-        const px = x*gridSizeX + 0.5;
-        ctx.beginPath();
-        ctx.moveTo(px,0);
-        ctx.lineTo(px,canvas.height);
-        ctx.stroke();
+      for (let x=0;x<=COLS;x++){
+        const px = x*BLOCK + 0.5;
+        ctx.beginPath(); ctx.moveTo(px,0); ctx.lineTo(px,canvas.height); ctx.stroke();
       }
-      for (let y=0;y<=ROWS;y++) {
-        const py = y*gridSizeY + 0.5;
-        ctx.beginPath();
-        ctx.moveTo(0,py);
-        ctx.lineTo(canvas.width,py);
-        ctx.stroke();
+      for (let y=0;y<=ROWS;y++){
+        const py = y*BLOCK + 0.5;
+        ctx.beginPath(); ctx.moveTo(0,py); ctx.lineTo(canvas.width,py); ctx.stroke();
       }
 
       this.drawMatrix(this.matrix,{x:0,y:0});
       this.drawMatrix(this.piece.matrix,this.piece.pos);
     }
 
-    drawMatrix(matrix,offset){
+    drawMatrix(matrix, offset) {
       matrix.forEach((row,y)=>{
         row.forEach((v,x)=>{
-          if (v!==0){
-            const px=(x+offset.x)*BLOCK;
-            const py=(y+offset.y)*BLOCK;
+          if (v!==0) {
+            const px = (x+offset.x)*BLOCK;
+            const py = (y+offset.y)*BLOCK;
             ctx.fillStyle = COLORS[v] || "#e5e7eb";
             ctx.fillRect(px+0.5,py+0.5,BLOCK-1,BLOCK-1);
-            // light bevel
             const g = ctx.createLinearGradient(px,py,px,py+BLOCK);
             g.addColorStop(0,"rgba(255,255,255,0.4)");
             g.addColorStop(0.4,"rgba(255,255,255,0)");
@@ -801,244 +806,254 @@
     async sendScore() {
       if (!USER_ID || !CHAT_ID) return;
       try {
-        await fetch("/tetris/submit-score/",{
-          method:"POST",
-          headers:{"Content-Type":"application/json"},
-          body:JSON.stringify({
-            user_id:USER_ID,
-            chat_id:CHAT_ID,
-            username:USERNAME,
-            score:this.score,
+        await fetch("/tetris/submit-score/", {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify({
+            user_id: USER_ID,
+            chat_id: CHAT_ID,
+            username: USERNAME,
+            score: this.score,
           }),
         });
-      } catch(e){
-        console.error("submit-score error",e);
+      } catch (e) {
+        console.error("submit-score error", e);
       }
     }
   }
 
   let board = new Board();
 
-  let animationHandle;
-  function loop(time=0){
+  function loop(time=0) {
     const dt = time - board.lastTime;
     board.lastTime = time;
     board.update(dt);
     board.draw();
-    animationHandle = requestAnimationFrame(loop);
+    requestAnimationFrame(loop);
   }
   loop();
 
   // KEYBOARD CONTROLS ------------------------------------------------------
-
-  document.addEventListener("keydown", (e)=>{
+  document.addEventListener("keydown", e => {
     if (board.gameOver || board.paused) return;
-    if (e.key==="ArrowLeft"){
+    if (e.key === "ArrowLeft") {
       board.piece.move(-1,0);
-    } else if (e.key==="ArrowRight"){
+    } else if (e.key === "ArrowRight") {
       board.piece.move(1,0);
-    } else if (e.key==="ArrowDown"){
-      board.softDrop();
-    } else if (e.key==="ArrowUp"){
+    } else if (e.key === "ArrowDown") {
+      board.softDropStep();
+    } else if (e.key === "ArrowUp") {
       board.piece.rotate(1);
-    } else if (e.code==="Space"){
+    } else if (e.code === "Space") {
       e.preventDefault();
       board.hardDrop();
-    } else if (e.key==="Escape"){
+    } else if (e.key === "Escape") {
       openPause();
     }
   });
 
-  // TOUCH CONTROLS (SMART / SWIPE) ----------------------------------------
-
+  // TOUCH CONTROLS ---------------------------------------------------------
   let controlMode = localStorage.getItem("tetris_control_mode") || "smart";
 
   let touchActive = false;
-  let touchStartX = 0;
-  let touchStartY = 0;
-  let lastMoveX = 0;
+  let touchStartX = 0, touchStartY = 0;
+  let lastMoveX = 0, lastSoftDropY = 0;
   let touchStartTime = 0;
 
-  function setControlMode(mode){
+  function setControlMode(mode) {
     controlMode = mode;
-    localStorage.setItem("tetris_control_mode",mode);
+    localStorage.setItem("tetris_control_mode", mode);
   }
 
-  canvas.addEventListener("touchstart",(e)=>{
+  canvas.addEventListener("touchstart", e => {
     if (board.gameOver) return;
     const t = e.touches[0];
     const rect = canvas.getBoundingClientRect();
     const x = t.clientX - rect.left;
     const y = t.clientY - rect.top;
-
     touchActive = true;
     touchStartX = lastMoveX = x;
     touchStartY = y;
+    lastSoftDropY = y;
     touchStartTime = performance.now();
-  });
+  }, {passive: true});
 
-  canvas.addEventListener("touchmove",(e)=>{
+  canvas.addEventListener("touchmove", e => {
     if (!touchActive || board.gameOver || board.paused) return;
     const t = e.touches[0];
     const rect = canvas.getBoundingClientRect();
     const x = t.clientX - rect.left;
     const y = t.clientY - rect.top;
+
     const dx = x - lastMoveX;
     const dy = y - touchStartY;
 
-    if (controlMode === "smart") {
-      const step = BLOCK * 0.6;
-      while (dx > step) {
-        board.piece.move(1,0);
-        lastMoveX += step;
-      }
-      while (dx < -step) {
-        board.piece.move(-1,0);
-        lastMoveX -= step;
-      }
-      if (dy > BLOCK*0.5) {
-        board.softDrop();
-        touchStartY += BLOCK*0.5;
-      }
-    } else { // swipe mode: move left/right while swiping
-      const step = BLOCK * 0.6;
-      while (dx > step){
-        board.piece.move(1,0);
-        lastMoveX += step;
-      }
-      while (dx < -step){
-        board.piece.move(-1,0);
-        lastMoveX -= step;
-      }
+    // horizontal move (same for both modes)
+    const stepX = BLOCK * 0.6;
+    while (dx > stepX) {
+      board.piece.move(1,0);
+      lastMoveX += stepX;
     }
-    e.preventDefault();
-  });
+    while (dx < -stepX) {
+      board.piece.move(-1,0);
+      lastMoveX -= stepX;
+    }
 
-  canvas.addEventListener("touchend",(e)=>{
+    if (controlMode === "smart") {
+      // slow drag down => repeated soft-drop steps
+      const diffY = y - lastSoftDropY;
+      const stepY = BLOCK * 0.6;
+      while (diffY > stepY) {
+        board.softDropStep();
+        lastSoftDropY += stepY;
+      }
+    } else {
+      // swipe mode: we handle vertical in touchend
+      // nothing here except horizontal
+    }
+  }, {passive: true});
+
+  canvas.addEventListener("touchend", e => {
     if (!touchActive || board.gameOver) return;
     touchActive = false;
+
     const rect = canvas.getBoundingClientRect();
-    const x = (e.changedTouches[0].clientX - rect.left);
-    const y = (e.changedTouches[0].clientY - rect.top);
+    const x = e.changedTouches[0].clientX - rect.left;
+    const y = e.changedTouches[0].clientY - rect.top;
     const dx = x - touchStartX;
     const dy = y - touchStartY;
     const dt = performance.now() - touchStartTime;
 
-    if (controlMode === "smart") {
-      // Smart: always drop on release
-      if (!board.paused) board.hardDrop();
-    } else {
-      const absX = Math.abs(dx);
-      const absY = Math.abs(dy);
+    const absX = Math.abs(dx);
+    const absY = Math.abs(dy);
 
+    if (controlMode === "smart") {
+      // Only downwards movement matters
+      if (dy > 25) {
+        const speed = dy / dt; // px per ms
+        if (speed > 0.7) {
+          // fast swipe down => hard drop
+          board.hardDrop();
+        } else {
+          // slower drag: we already soft-dropped during move,
+          // maybe add one more gentle step
+          board.softDropStep();
+        }
+      }
+      // simple tap does nothing in smart mode
+    } else {
+      // SWIPE MODE
       if (absX < 10 && absY < 10 && dt < 220) {
-        // tap -> rotate: left side = rotate left, right = rotate right
-        if (x < canvas.width/2) {
+        // tap => rotate left/right
+        if (x < canvas.width / 2) {
           board.piece.rotate(-1);
         } else {
           board.piece.rotate(1);
         }
-      } else if (absY > absX && dy > 24) {
-        if (dy > 80 && dt < 220) {
+      } else if (absY > absX && dy > 18) {
+        const speed = dy / dt;
+        if (speed > 0.7 && dy > 50) {
           board.hardDrop();
         } else {
-          board.softDrop();
+          board.softDropStep();
         }
       }
+      // horizontal swipes were already applied in move
     }
-  });
+  }, {passive: true});
 
-  // PAUSE / MENUS ---------------------------------------------------------
-
+  // PAUSE & MENUS ----------------------------------------------------------
   const pauseOverlay = document.getElementById("pauseOverlay");
   const howToOverlay = document.getElementById("howToOverlay");
   const optionsOverlay = document.getElementById("optionsOverlay");
 
-  function openPause(){
+  function openPause() {
     board.paused = true;
     pauseOverlay.classList.remove("hidden");
   }
-  function closePause(){
+  function closePause() {
     pauseOverlay.classList.add("hidden");
     board.paused = false;
   }
 
   document.getElementById("pauseBtn").addEventListener("click", openPause);
   document.getElementById("btnResume").addEventListener("click", closePause);
-
-  document.getElementById("btnQuit").addEventListener("click", ()=>{
+  document.getElementById("btnQuit").addEventListener("click", () => {
     board = new Board();
     closePause();
   });
 
   // Options
-  function openOptions(){
+  function openOptions() {
     pauseOverlay.classList.add("hidden");
     optionsOverlay.classList.remove("hidden");
-    const radios = document.querySelectorAll('input[name="controlMode"]');
-    radios.forEach(r => {
+    document.querySelectorAll('input[name="controlMode"]').forEach(r => {
       r.checked = (r.value === controlMode);
     });
   }
-  function closeOptions(){
+  function closeOptions() {
     optionsOverlay.classList.add("hidden");
     pauseOverlay.classList.remove("hidden");
   }
+
   document.getElementById("btnOptions").addEventListener("click", openOptions);
   document.getElementById("btnOptionsCancel").addEventListener("click", closeOptions);
-  document.getElementById("btnOptionsSave").addEventListener("click", ()=>{
+  document.getElementById("btnOptionsSave").addEventListener("click", () => {
     const val = document.querySelector('input[name="controlMode"]:checked');
     if (val) setControlMode(val.value);
     closeOptions();
   });
 
-  // How to play (two slides: smart & swipe)
+  // How to play (two slides)
   let howToSlide = 0;
   const howToTitle = document.getElementById("howToTitle");
   const howToText = document.getElementById("howToText");
   const howToCaption = document.getElementById("howToCaption");
 
-  function renderHowToSlide(){
-    if (howToSlide === 0){
+  function renderHowToSlide() {
+    if (howToSlide === 0) {
       howToTitle.textContent = "Smart control";
       howToText.innerHTML =
-        "Drag your finger horizontally and the piece follows possible columns.<br>" +
-        "Lift your finger to lock it instantly at that position.";
+        "Drag your finger horizontally and down.<br>" +
+        "Slow drag down makes the piece fall step by step.<br>" +
+        "Fast drag down slams it to the bottom.";
       howToCaption.innerHTML =
-        "<strong>Tip:</strong> slide to choose where it lands, release to perform a quick drop.";
+        "<strong>Smart:</strong> slow = soft, fast = hard drop.";
     } else {
       howToTitle.textContent = "Swipe control";
       howToText.innerHTML =
-        "Swipe left or right to slide the piece. Tap left or right side of the screen to rotate.<br>" +
-        "Swipe down for a soft drop, or flick down quickly for a hard drop.";
+        "Swipe left / right to move the piece.<br>" +
+        "Tap left or right side to rotate.<br>" +
+        "Swipe down to drop, fast swipe down = hard drop.";
       howToCaption.innerHTML =
-        "<strong>Tip:</strong> gentle swipe to move or soft drop, fast flick down to slam the piece.";
+        "<strong>Swipe:</strong> move with swipes, rotate with taps.";
     }
   }
 
-  function openHowTo(){
+  function openHowTo() {
     pauseOverlay.classList.add("hidden");
     howToOverlay.classList.remove("hidden");
     howToSlide = 0;
     renderHowToSlide();
   }
-  function closeHowTo(){
+
+  function closeHowTo() {
     howToOverlay.classList.add("hidden");
     pauseOverlay.classList.remove("hidden");
   }
 
   document.getElementById("btnHowTo").addEventListener("click", openHowTo);
   document.getElementById("btnSlideDone").addEventListener("click", closeHowTo);
-  document.getElementById("btnSlidePrev").addEventListener("click", ()=>{
-    howToSlide = (howToSlide+1)%2;
+  document.getElementById("btnSlidePrev").addEventListener("click", () => {
+    howToSlide = (howToSlide + 1) % 2;
     renderHowToSlide();
   });
-  document.getElementById("btnSlideNext").addEventListener("click", ()=>{
-    howToSlide = (howToSlide+1)%2;
+  document.getElementById("btnSlideNext").addEventListener("click", () => {
+    howToSlide = (howToSlide + 1) % 2;
     renderHowToSlide();
   });
 
-  // default control mode radios init (in case user opens options first time)
+  // initialize control mode once
   setControlMode(controlMode);
 </script>
 </body>
