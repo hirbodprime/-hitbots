@@ -13,7 +13,9 @@ from telegram.ext import (
     CommandHandler,
     ContextTypes,
     CallbackQueryHandler,
+    InlineQueryHandler,
 )
+from telegram import InlineQueryResultGame, Update
 
 from tetris.models import TetrisScore
 
@@ -106,12 +108,20 @@ async def top_group(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = "*👥 Group Tetris Leaderboard*\n\n" + format_scores(list(scores))
     await update.message.reply_text(text, parse_mode=ParseMode.MARKDOWN)
 
+async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.inline_query
+
+    # Simple: always return the Tetris game
+    results = [
+        InlineQueryResultGame(
+            id="tetris_1",
+            game_short_name=TETRIS_GAME_SHORT_NAME,
+        )
+    ]
+    await query.answer(results=results, cache_time=0)
 
 def build_application() -> Application:
     token = settings.TELEGRAM_BOT_TOKEN
-    if not token:
-        raise RuntimeError("TELEGRAM_BOT_TOKEN not set in environment")
-
     app = ApplicationBuilder().token(token).build()
 
     app.add_handler(CommandHandler("start", start))
@@ -119,7 +129,10 @@ def build_application() -> Application:
     app.add_handler(CommandHandler("top_global", top_global))
     app.add_handler(CommandHandler("top_group", top_group))
 
-    # callback for Game button
+    # 🔹 Inline mode
+    app.add_handler(InlineQueryHandler(inline_query))
+
+    # 🔹 Game “Play” button callback
     app.add_handler(CallbackQueryHandler(game_callback, pattern="^"))
 
     return app
