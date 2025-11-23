@@ -17,7 +17,7 @@ from telegram.ext import (
 
 from tetris.models import TetrisScore
 
-TETRIS_GAME_SHORT_NAME = "hir_tetris"  # set this in BotFather as the Game short name
+TETRIS_GAME_SHORT_NAME = "tetris"  # set this in BotFather as the Game short name
 
 
 def build_game_url(user, chat):
