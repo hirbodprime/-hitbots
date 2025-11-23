@@ -17,26 +17,25 @@ from telegram.ext import (
 )
 from telegram import InlineQueryResultGame, Update
 
+from urllib.parse import quote_plus
+
 from tetris.models import TetrisScore
 
 TETRIS_GAME_SHORT_NAME = "tetris"  # set this in BotFather as the Game short name
 
 
-def build_game_url(user, chat):
-    """
-    Build the URL opened when user presses 'Play'.
-    Telegram passes us user/chat via callback_query.
-    """
+
+
+def build_game_url(user_id: int, chat_id: int, username: str | None = "") -> str:
     base = settings.SITE_URL.rstrip("/")
     path = reverse("tetris:play")
-    url = (
+    username = username or ""
+    return (
         f"{base}{path}"
-        f"?user_id={user.id}"
-        f"&chat_id={chat.id}"
-        f"&username={user.username or ''}"
+        f"?user_id={user_id}"
+        f"&chat_id={chat_id}"
+        f"&username={quote_plus(username)}"
     )
-    return url
-
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = (
@@ -65,25 +64,32 @@ from telegram import Update
 from telegram.ext import ContextTypes
 
 async def game_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """
-    User taps 'Play' on the game message -> we must answer the callback
-    with the URL of our HTML5 Tetris page.
-    """
     query = update.callback_query
 
-    # Safety: ensure this callback is really for our game
     if query.game_short_name != TETRIS_GAME_SHORT_NAME:
         await query.answer(text="Unknown game.", show_alert=True)
         return
 
     user = query.from_user
-    chat = query.message.chat
 
-    url = build_game_url(user, chat)  # builds https://yourdomain.com/tetris/?user_id=...&chat_id=...
+    # If message exists (normal chat), use that chat id.
+    # If not (inline-only), fall back to user.id as a "chat" bucket.
+    if query.message:
+        chat_id = query.message.chat.id
+    else:
+        # inline_message only – no chat object
+        chat_id = user.id
 
-    # IMPORTANT: answer ONCE, with the URL
+    url = build_game_url(
+        user_id=user.id,
+        chat_id=chat_id,
+        username=user.username,
+    )
+
+    # Answer ONCE with URL so Telegram opens the webview
     await query.answer(url=url)
 
+    
 def format_scores(scores, limit=10):
     lines = []
     medals = ["🥇", "🥈", "🥉"]
