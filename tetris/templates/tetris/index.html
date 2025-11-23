@@ -2,99 +2,298 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Tetris - Hirbots</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tetris - Hir Games</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
   <style>
+    :root {
+      --bg: #1a1b2e;
+      --shell: #d3d3d3;
+      --shell-border: #8c8c8c;
+      --well-bg: #000000;
+      --hud-bg: #b0b0b0;
+      --hud-border: #6c6c6c;
+      --hud-text: #111827;
+      --hud-label: #374151;
+      --hud-screen: #111827;
+      --hud-screen-text: #e5e7eb;
+      --accent: #facc15;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
     html, body {
       margin: 0;
       padding: 0;
-      background: #050816;
-      color: #f9fafb;
+      height: 100%;
+      background: radial-gradient(circle at top, #312e81 0, #020617 65%);
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: #f9fafb;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
     }
 
-    .game-wrapper {
+    .cabinet {
       display: flex;
-      gap: 16px;
-      align-items: flex-start;
+      flex-direction: row;
+      gap: 12px;
+      padding: 12px;
+      border-radius: 18px;
+      background: linear-gradient(180deg, var(--shell) 0%, #e5e5e5 40%, #d0d0d0 100%);
+      border: 4px solid var(--shell-border);
+      box-shadow:
+        0 20px 40px rgba(15, 23, 42, 0.8),
+        inset 0 0 0 2px rgba(255, 255, 255, 0.6);
+      max-width: 760px;
+      width: 100%;
+    }
+
+    /* For very small screens stack vertically */
+    @media (max-width: 640px) {
+      .cabinet {
+        flex-direction: column;
+        align-items: center;
+        padding: 10px;
+      }
+    }
+
+    .well-wrapper {
+      flex: 0 0 auto;
+      padding: 8px;
+      border-radius: 14px;
+      background: #aaaaaa;
+      box-shadow:
+        inset 0 0 0 2px rgba(255, 255, 255, .6),
+        inset 0 0 20px rgba(0, 0, 0, .4);
     }
 
     #tetris {
-      background: #020617;
-      border: 2px solid #1e293b;
-      box-shadow: 0 0 40px rgba(15, 23, 42, 0.9);
+      display: block;
+      background: var(--well-bg);
+      border-radius: 6px;
+      border: 2px solid #4b5563;
     }
 
-    .sidebar {
-      font-size: 14px;
-      max-width: 160px;
+    .hud {
+      flex: 0 0 180px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
     }
 
-    .score-box {
-      background: #020617;
+    @media (max-width: 640px) {
+      .hud {
+        flex: 0 0 auto;
+        width: 100%;
+        max-width: 360px;
+      }
+    }
+
+    .hud-panel {
+      background: var(--hud-bg);
       border-radius: 12px;
-      padding: 10px 12px;
-      border: 1px solid #1e293b;
-      margin-bottom: 12px;
+      padding: 8px 10px;
+      border: 2px solid var(--hud-border);
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, .4),
+        0 4px 8px rgba(15, 23, 42, .3);
     }
 
-    .score-label {
+    .hud-title {
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--hud-label);
+      margin-bottom: 4px;
+    }
+
+    .hud-screen {
+      background: #111827;
+      color: var(--hud-screen-text);
+      border-radius: 8px;
+      padding: 6px 8px;
+      font-family: "Courier New", monospace;
+      font-size: 13px;
+      line-height: 1.4;
+      box-shadow:
+        inset 0 0 12px rgba(15, 23, 42, .9),
+        inset 0 0 0 1px rgba(148, 163, 184, 0.5);
+    }
+
+    .hud-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2px;
+    }
+
+    .hud-row-label {
       font-size: 11px;
       text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: #64748b;
-      margin-bottom: 4px;
+      letter-spacing: 0.1em;
+      color: #9ca3af;
     }
 
-    .score-value {
-      font-size: 20px;
+    .hud-row-value {
+      font-size: 14px;
       font-weight: 600;
-      color: #fbbf24;
+      color: var(--accent);
     }
 
-    .controls {
+    .hud-next {
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .hud-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       font-size: 11px;
-      color: #94a3b8;
-      line-height: 1.5;
+      color: #9ca3af;
     }
 
-    .tag {
+    .game-title {
+      font-family: "Courier New", monospace;
+      font-weight: 700;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      text-align: center;
+      font-size: 14px;
+      color: #111827;
+    }
+
+    .player-label {
       font-size: 11px;
-      color: #38bdf8;
-      margin-bottom: 4px;
+      color: #6b7280;
+      text-align: center;
+      margin-top: 4px;
     }
 
-    .username {
-      font-size: 13px;
+    .player-label span {
+      color: #111827;
+      font-weight: 600;
+    }
+
+    /* Touch controls ------------------------------------------------------ */
+
+    .touch-area {
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .touch-row {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+    }
+
+    .touch-btn {
+      border: none;
+      border-radius: 999px;
+      padding: 10px 16px;
+      min-width: 56px;
+      font-size: 18px;
+      font-weight: 600;
+      background: #111827;
       color: #e5e7eb;
-      margin-bottom: 8px;
+      box-shadow:
+        0 4px 0 #020617,
+        0 0 0 1px rgba(148, 163, 184, 0.7),
+        0 10px 20px rgba(15, 23, 42, .7);
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+
+    .touch-btn:active {
+      transform: translateY(2px);
+      box-shadow:
+        0 2px 0 #020617,
+        0 0 0 1px rgba(148, 163, 184, 0.7),
+        0 4px 8px rgba(15, 23, 42, .7);
+    }
+
+    .touch-btn.secondary {
+      font-size: 14px;
+      padding-inline: 12px;
+    }
+
+    /* Show touch controls by default on mobile; still visible on desktop but fine */
+    @media (min-width: 900px) {
+      .touch-btn {
+        padding: 8px 14px;
+      }
     }
   </style>
 </head>
 <body>
-<div class="game-wrapper">
-  <canvas id="tetris" width="200" height="400"></canvas>
-  <div class="sidebar">
-    <div class="tag">hirbots · tetris</div>
-    <div class="username">
-      Player:
-      {{ username|default:"Anonymous" }}
+<div class="cabinet">
+  <div class="well-wrapper">
+    <canvas id="tetris"></canvas>
+
+    <div class="touch-area">
+      <div class="touch-row">
+        <button class="touch-btn" data-action="left">◀</button>
+        <button class="touch-btn" data-action="rotate">⟳</button>
+        <button class="touch-btn" data-action="right">▶</button>
+      </div>
+      <div class="touch-row">
+        <button class="touch-btn secondary" data-action="soft-drop">▼</button>
+        <button class="touch-btn secondary" data-action="hard-drop">⤓</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="hud">
+    <div class="hud-panel">
+      <div class="game-title">TETRIS</div>
+      <div class="player-label">
+        PLAYER: <span>{{ username|default:"ANON" }}</span>
+      </div>
     </div>
 
-    <div class="score-box">
-      <div class="score-label">Score</div>
-      <div class="score-value" id="score">0</div>
+    <div class="hud-panel">
+      <div class="hud-title">status</div>
+      <div class="hud-screen">
+        <div class="hud-row">
+          <div class="hud-row-label">SCORE</div>
+          <div class="hud-row-value" id="score">0</div>
+        </div>
+        <div class="hud-row">
+          <div class="hud-row-label">LEVEL</div>
+          <div class="hud-row-value" id="level">1</div>
+        </div>
+        <div class="hud-row">
+          <div class="hud-row-label">LINES</div>
+          <div class="hud-row-value" id="lines">0</div>
+        </div>
+      </div>
     </div>
 
-    <div class="controls">
-      ← / → : Move<br>
-      ↑ : Rotate<br>
-      ↓ : Soft drop<br>
-      Space : Hard drop
+    <div class="hud-panel">
+      <div class="hud-title">next</div>
+      <div class="hud-screen hud-next">
+        <span style="font-size:10px;color:#6b7280;">COMING SOON</span>
+        <!-- You can later render next piece preview here -->
+      </div>
+    </div>
+
+    <div class="hud-panel">
+      <div class="hud-footer">
+        <span>← → : MOVE · ↑ : ROTATE</span>
+      </div>
+      <div class="hud-footer" style="margin-top:4px;">
+        <span>↓ : SOFT DROP · SPACE : HARD</span>
+      </div>
     </div>
   </div>
 </div>
@@ -109,43 +308,61 @@
 
   const COLS = 10;
   const ROWS = 20;
-  const BLOCK = canvas.width / COLS;
+  let BLOCK = 10; // will be resized
+
+  function resizeCanvas() {
+    const maxWidth = (window.innerWidth <= 640)
+      ? window.innerWidth - 40
+      : 260; // desktop default width
+
+    const width = Math.max(180, Math.min(maxWidth, 320));
+    const height = width * 2; // 10x20
+    canvas.width = width;
+    canvas.height = height;
+    BLOCK = canvas.width / COLS;
+  }
+
+  resizeCanvas();
+  window.addEventListener("resize", () => {
+    resizeCanvas();
+    if (board) board.draw();
+  });
 
   const COLORS = [
     null,
-    "#f97316", // L
-    "#3b82f6", // J
-    "#22c55e", // S
-    "#ef4444", // Z
-    "#eab308", // O
-    "#a855f7", // T
-    "#06b6d4", // I
+    "#00f0f0", // I - cyan
+    "#0000f0", // J - blue
+    "#f0a000", // L - orange
+    "#f0f000", // O - yellow
+    "#00f000", // S - green
+    "#f00000", // Z - red
+    "#a000f0", // T - purple
   ];
 
   const SHAPES = {
     I: [[1, 1, 1, 1]],
-    O: [
-      [2, 2],
-      [2, 2],
-    ],
-    T: [
-      [0, 3, 0],
-      [3, 3, 3],
-    ],
-    S: [
-      [0, 4, 4],
-      [4, 4, 0],
-    ],
-    Z: [
-      [5, 5, 0],
-      [0, 5, 5],
-    ],
     J: [
-      [6, 0, 0],
-      [6, 6, 6],
+      [2, 0, 0],
+      [2, 2, 2],
     ],
     L: [
-      [0, 0, 7],
+      [0, 0, 3],
+      [3, 3, 3],
+    ],
+    O: [
+      [4, 4],
+      [4, 4],
+    ],
+    S: [
+      [0, 5, 5],
+      [5, 5, 0],
+    ],
+    Z: [
+      [6, 6, 0],
+      [0, 6, 6],
+    ],
+    T: [
+      [0, 7, 0],
       [7, 7, 7],
     ],
   };
@@ -175,7 +392,10 @@
     spawn() {
       const key = SHAPE_KEYS[(SHAPE_KEYS.length * Math.random()) | 0];
       this.matrix = SHAPES[key].map(row => [...row]);
-      this.pos = {x: (COLS / 2 | 0) - (this.matrix[0].length / 2 | 0), y: 0};
+      this.pos = {
+        x: (COLS / 2 | 0) - (this.matrix[0].length / 2 | 0),
+        y: 0
+      };
     }
 
     move(offsetX, offsetY) {
@@ -210,10 +430,19 @@
       this.matrix = createMatrix(COLS, ROWS);
       this.piece = new Piece(this);
       this.score = 0;
+      this.lines = 0;
+      this.level = 1;
       this.dropCounter = 0;
-      this.dropInterval = 500; // ms
+      this.dropInterval = 600;
       this.lastTime = 0;
       this.gameOver = false;
+      this.updateHUD();
+    }
+
+    updateHUD() {
+      document.getElementById("score").innerText = this.score;
+      document.getElementById("lines").innerText = this.lines;
+      document.getElementById("level").innerText = this.level;
     }
 
     collides(piece) {
@@ -221,18 +450,11 @@
       const o = piece.pos;
       for (let y = 0; y < m.length; y++) {
         for (let x = 0; x < m[y].length; x++) {
-          if (m[y][x] !== 0 &&
-              (this.matrix[y + o.y] && this.matrix[y + o.y][x + o.x]) !== 0) {
-            return true;
-          }
-          if (m[y][x] !== 0 && (y + o.y) >= ROWS) {
-            return true;
-          }
-          if (m[y][x] !== 0 && (x + o.x) < 0) {
-            return true;
-          }
-          if (m[y][x] !== 0 && (x + o.x) >= COLS) {
-            return true;
+          if (m[y][x] !== 0) {
+            const ny = y + o.y;
+            const nx = x + o.x;
+            if (ny < 0 || ny >= ROWS || nx < 0 || nx >= COLS) return true;
+            if (this.matrix[ny][nx] !== 0) return true;
           }
         }
       }
@@ -264,8 +486,11 @@
       }
       if (lines > 0) {
         const scoreAdd = [0, 40, 100, 300, 1200][lines];
-        this.score += scoreAdd;
-        document.getElementById("score").innerText = this.score;
+        this.score += scoreAdd * this.level;
+        this.lines += lines;
+        this.level = 1 + Math.floor(this.lines / 10);
+        this.dropInterval = Math.max(120, 600 - (this.level - 1) * 40);
+        this.updateHUD();
       }
     }
 
@@ -300,7 +525,7 @@
     }
 
     draw() {
-      ctx.fillStyle = "#020617";
+      ctx.fillStyle = "#000000";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       this.drawMatrix(this.matrix, {x: 0, y: 0});
@@ -317,6 +542,13 @@
               (y + offset.y) * BLOCK,
               BLOCK - 1,
               BLOCK - 1
+            );
+            ctx.fillStyle = "rgba(0,0,0,0.25)";
+            ctx.fillRect(
+              (x + offset.x) * BLOCK,
+              (y + offset.y) * BLOCK + BLOCK * 0.35,
+              BLOCK - 1,
+              BLOCK * 0.65
             );
           }
         });
@@ -342,7 +574,7 @@
     }
   }
 
-  const board = new Board();
+  let board = new Board();
 
   function loop(time = 0) {
     const deltaTime = time - board.lastTime;
@@ -352,20 +584,42 @@
     requestAnimationFrame(loop);
   }
 
+  function handleAction(action) {
+    if (board.gameOver) return;
+    if (action === "left") {
+      board.piece.move(-1, 0);
+    } else if (action === "right") {
+      board.piece.move(1, 0);
+    } else if (action === "soft-drop") {
+      board.drop();
+    } else if (action === "hard-drop") {
+      board.hardDrop();
+    } else if (action === "rotate") {
+      board.piece.rotate(1);
+    }
+  }
+
   document.addEventListener("keydown", e => {
     if (board.gameOver) return;
     if (e.key === "ArrowLeft") {
-      board.piece.move(-1, 0);
+      handleAction("left");
     } else if (e.key === "ArrowRight") {
-      board.piece.move(1, 0);
+      handleAction("right");
     } else if (e.key === "ArrowDown") {
-      board.drop();
+      handleAction("soft-drop");
     } else if (e.key === "ArrowUp") {
-      board.piece.rotate(1);
+      handleAction("rotate");
     } else if (e.code === "Space") {
       e.preventDefault();
-      board.hardDrop();
+      handleAction("hard-drop");
     }
+  });
+
+  document.querySelectorAll(".touch-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const action = btn.dataset.action;
+      handleAction(action);
+    });
   });
 
   loop();
