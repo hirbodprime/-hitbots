@@ -414,11 +414,27 @@
     border-radius: 10px;
   }
 }
+.side-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: .18em;
+  color: #111827;
+  margin-bottom: 3px;
+  font-weight: 700;
+}
+
+.side-screen {
+  background: #111827;
+  color: var(--label-text);
+
+}
 
   </style>
 </head>
 <body>
 <div class="frame">
+  <audio id="tetrisMusic" src="/tetris/music/tetris_theme.ogg" loop></audio>
+
   <div class="cabinet">
     <!-- LEFT SIDE -->
     <div class="side-column">
@@ -484,18 +500,10 @@
         <div class="lb-list" id="lbChat"></div>
       </div>
     </div>
-    <div class="modal-btn-row">
-      <button class="btn btn-primary" id="btnStartGame">Play</button>
-    </div>
-    <div class="modal-hint">
-      <strong>Controls:</strong><br>
-      • Swipe left / right: move<br>
-      • Swipe down slowly: soft drop<br>
-      • Swipe down fast: hard drop<br>
-      • Swipe up: Hold / swap piece<br>
-      • Tap: rotate<br>
-      • Keyboard: arrows + Space (desktop)
-    </div>
+<div class="modal-btn-row">
+  <button class="btn btn-primary" id="btnStartGame">Play</button>
+</div>
+
   </div>
 </div>
 
@@ -507,6 +515,15 @@
     <div class="modal-btn-row">
       <button class="btn btn-primary" id="btnResume">Resume</button>
       <button class="btn btn-danger" id="btnQuit">Quit</button>
+    </div>
+    <div class="modal-hint" style="margin-top:10px;">
+      <strong>Hint:</strong><br>
+      • Swipe left / right: move<br>
+      • Swipe down slowly: soft drop<br>
+      • Swipe down fast: hard drop<br>
+      • Swipe up: Hold / swap piece<br>
+      • Tap anywhere: rotate<br>
+      • Desktop: arrows + Space
     </div>
   </div>
 </div>
@@ -524,10 +541,34 @@
   const nextCtx = nextCanvas.getContext("2d");
   const holdCanvas = document.getElementById("holdCanvas");
   const holdCtx = holdCanvas.getContext("2d");
+const music = document.getElementById("tetrisMusic");
+let musicStarted = false;
 
   const COLS = 10;
   const ROWS = 20;
   let BLOCK = 10;
+function startMusic() {
+  if (musicStarted || !music) return;
+  musicStarted = true;
+  music.volume = 0.4;
+  music.play().catch(() => {
+    // browser blocked autoplay, will start on next interaction
+  });
+}
+
+function pauseMusic() {
+  if (music && !music.paused) {
+    music.pause();
+  }
+}
+
+function stopMusic() {
+  if (music) {
+    music.pause();
+    music.currentTime = 0;
+    musicStarted = false;
+  }
+}
 
 function resizeCanvas() {
   const isMobile = window.innerWidth <= 700;
@@ -562,11 +603,18 @@ function resizeCanvas() {
     if (board) board.draw();
   });
 
-  const COLORS = [
-    null,
-    "#00f0f0", "#0000f0", "#f0a000", "#f0f000",
-    "#00f000", "#f00000", "#a000f0",
-  ];
+// Brighter, more classic NES-like colors
+const COLORS = [
+  null,
+  "#00f0f0", // I - cyan
+  "#0000f8", // J - blue
+  "#f8a000", // L - orange
+  "#f8f000", // O - yellow
+  "#00f800", // S - green
+  "#f80000", // Z - red
+  "#a000f8", // T - purple
+];
+
   const SHAPES = {
     I: [[1,1,1,1]],
     J: [[2,0,0],[2,2,2]],
@@ -684,9 +732,9 @@ function resizeCanvas() {
           holdCtx.fillStyle = COLORS[v] || "#e5e7eb";
           holdCtx.fillRect(px+0.5,py+0.5,cell-1,cell-1);
           const g=holdCtx.createLinearGradient(px,py,px,py+cell);
-          g.addColorStop(0,"rgba(255,255,255,0.4)");
-          g.addColorStop(0.4,"rgba(255,255,255,0)");
-          g.addColorStop(1,"rgba(0,0,0,0.5)");
+g.addColorStop(0, "rgba(255,255,255,0.55)");
+g.addColorStop(0.4,"rgba(255,255,255,0.05)");
+g.addColorStop(1, "rgba(0,0,0,0.65)");
           holdCtx.fillStyle=g;
           holdCtx.fillRect(px+0.5,py+0.5,cell-1,cell-1);
         }
@@ -710,9 +758,9 @@ function resizeCanvas() {
           nextCtx.fillStyle = COLORS[v] || "#e5e7eb";
           nextCtx.fillRect(px+0.5,py+0.5,cell-1,cell-1);
           const g=nextCtx.createLinearGradient(px,py,px,py+cell);
-          g.addColorStop(0,"rgba(255,255,255,0.4)");
-          g.addColorStop(0.4,"rgba(255,255,255,0)");
-          g.addColorStop(1,"rgba(0,0,0,0.5)");
+g.addColorStop(0, "rgba(255,255,255,0.55)");
+g.addColorStop(0.4,"rgba(255,255,255,0.05)");
+g.addColorStop(1, "rgba(0,0,0,0.65)");
           nextCtx.fillStyle=g;
           nextCtx.fillRect(px+0.5,py+0.5,cell-1,cell-1);
         }
@@ -802,8 +850,8 @@ function resizeCanvas() {
       ctx.fillStyle="#000";
       ctx.fillRect(0,0,canvas.width,canvas.height);
 
-      ctx.strokeStyle="rgba(55,65,81,0.4)";
-      ctx.lineWidth=0.5;
+      ctx.strokeStyle="rgba(31,41,55,0.35)";
+      ctx.lineWidth = 0.4;
       for(let x=0;x<=COLS;x++){
         const px=x*BLOCK+0.5;
         ctx.beginPath();ctx.moveTo(px,0);ctx.lineTo(px,canvas.height);ctx.stroke();
@@ -832,9 +880,9 @@ function resizeCanvas() {
             ctx.fillStyle = COLORS[v] || "#e5e7eb";
             ctx.fillRect(px+0.5,py+0.5,BLOCK-1,BLOCK-1);
             const g=ctx.createLinearGradient(px,py,px,py+BLOCK);
-            g.addColorStop(0,"rgba(255,255,255,0.4)");
-            g.addColorStop(0.4,"rgba(255,255,255,0)");
-            g.addColorStop(1,"rgba(0,0,0,0.5)");
+g.addColorStop(0, "rgba(255,255,255,0.55)");
+g.addColorStop(0.4,"rgba(255,255,255,0.05)");
+g.addColorStop(1, "rgba(0,0,0,0.65)");
             ctx.fillStyle=g;
             ctx.fillRect(px+0.5,py+0.5,BLOCK-1,BLOCK-1);
           }
@@ -982,16 +1030,28 @@ async sendScore() {
 
   // pause + quit
   const pauseOverlay=document.getElementById("pauseOverlay");
-  function openPause(){board.paused=true;pauseOverlay.classList.remove("hidden");}
-  function closePause(){pauseOverlay.classList.add("hidden");board.paused=false;}
+function openPause(){
+  board.paused = true;
+  pauseOverlay.classList.remove("hidden");
+  pauseMusic();
+}
+
+function closePause(){
+  pauseOverlay.classList.add("hidden");
+  board.paused = false;
+  startMusic();
+}
+
 
   document.getElementById("pauseBtn").addEventListener("click",openPause);
   document.getElementById("btnResume").addEventListener("click",closePause);
 document.getElementById("btnQuit").addEventListener("click", async () => {
-  await board.sendScore();   // save before reset
-  board = new Board();       // new game instance
+  await board.sendScore();
+  board = new Board();
   closePause();
+  stopMusic();  // stop theme when leaving game
 });
+
 
 
   // ====== LEADERBOARD (start overlay) ======
@@ -1024,9 +1084,11 @@ document.getElementById("btnQuit").addEventListener("click", async () => {
     }catch(e){console.error("leaderboard error",e);}
   }
 
-  document.getElementById("btnStartGame").addEventListener("click",()=>{
-    startOverlay.classList.add("hidden");
-  });
+document.getElementById("btnStartGame").addEventListener("click", () => {
+  startOverlay.classList.add("hidden");
+  startMusic();
+});
+
 
   loadLeaderboards();
 </script>

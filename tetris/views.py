@@ -40,7 +40,6 @@ def tetris_page(request):
 
 
 BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN")
-
 @csrf_exempt
 def submit_score(request):
     if request.method != "POST":
@@ -51,8 +50,6 @@ def submit_score(request):
     except json.JSONDecodeError:
         return HttpResponseBadRequest("Invalid JSON")
 
-    print("submit_score raw data:", data)  # DEBUG
-
     user_id = int(data.get("user_id") or 0)
     chat_id = data.get("chat_id")
     username = (data.get("username") or "")[:255]
@@ -60,21 +57,27 @@ def submit_score(request):
     message_id = data.get("message_id")
     inline_message_id = data.get("inline_message_id")
 
-    print("parsed:", user_id, chat_id, username, score, message_id, inline_message_id)  # DEBUG
-
     if not user_id or score <= 0:
-        print("submit_score rejected: missing user_id or score <= 0")  # DEBUG
         return HttpResponseBadRequest("Missing user_id or score")
 
-    # save in DB
-    obj = TetrisScore.objects.create(
-        user_id=user_id,
-        chat_id=chat_id or None,
-        username=username,
-        score=score,
-    )
-    print("TetrisScore created with id:", obj.id)  # DEBUG
+    # ---------- ONE ROW PER (user_id, chat_id) – keep BEST score ----------
+    chat_key = chat_id or None  # normalize empty to NULL in DB
 
+    obj, created = TetrisScore.objects.get_or_create(
+        user_id=user_id,
+        chat_id=chat_key,
+        defaults={"username": username, "score": score},
+    )
+
+    if not created:
+        # Only update if new score is higher
+        if score > obj.score:
+            obj.score = score
+            obj.username = username  # keep latest username
+            obj.save(update_fields=["score", "username"])
+    # ---------------------------------------------------------------------
+
+    # update per-chat leaderboard in Telegram
     if BOT_TOKEN:
         payload = {
             "user_id": user_id,
@@ -89,25 +92,21 @@ def submit_score(request):
             payload["message_id"] = message_id
 
         try:
-            r = requests.post(
+            requests.post(
                 f"https://api.telegram.org/bot{BOT_TOKEN}/setGameScore",
                 json=payload,
                 timeout=5,
             )
-            print("setGameScore status:", r.status_code, r.text[:200])  # DEBUG
-        except requests.RequestException as e:
-            print("setGameScore error:", e)
+        except requests.RequestException:
+            pass
 
     return JsonResponse({"ok": True})
+
 
 def leaderboard(request):
     chat_id = request.GET.get("chat_id")
 
-    global_qs = (
-        TetrisScore.objects.values("user_id", "username")
-        .annotate(best=Max("score"))
-        .order_by("-best")[:10]
-    )
+    global_qs = TetrisScore.objects.order_by("-score")[:10]
     data_global = list(global_qs)
 
     data_chat = []
