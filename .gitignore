@@ -1,0 +1,105 @@
+# ----------------------------
+# PYTHON / DJANGO BASICS
+# ----------------------------
+
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Django stuff
+*.log
+*.pot
+*.pyc
+*.pyo
+*.pyd
+db.sqlite3
+media/
+static_root/
+
+# When using collectstatic
+staticfiles/
+static/
+build/
+dist/
+
+# Local environment
+.env
+.env.*
+!*.env.example
+
+# Byte-compiled / cache
+*.so
+*.dll
+
+# ----------------------------
+# VENV (Windows + Linux)
+# ----------------------------
+venv/
+env/
+env.bak/
+env_old/
+Scripts/
+Include/
+Lib/
+pyvenv.cfg
+
+# ----------------------------
+# IDE / EDITORS
+# ----------------------------
+
+# VSCode
+.vscode/
+.code-workspace
+
+# PyCharm
+.idea/
+*.iml
+
+# Sublime
+*.sublime-project
+*.sublime-workspace
+
+# ----------------------------
+# OS FILES
+# ----------------------------
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# linux misc
+.fuse_hidden*
+.nfs*
+
+# ----------------------------
+# TEMP FILES
+# ----------------------------
+*.bak
+*.tmp
+*.swp
+*.swo
+*.~lock*
+
+# Backup files
+*.orig
+*.patch
+*.rej
+
+# ----------------------------
+# NODE (if you ever use frontend)
+# ----------------------------
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# ----------------------------
+# TELEGRAM BOT LOGS
+# ----------------------------
+bot.log
+*.pid
+
