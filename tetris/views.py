@@ -38,47 +38,30 @@ def tetris_page(request):
     return render(request, "tetris/index.html", context)
 
 
-def leaderboard(request):
-    chat_id = request.GET.get("chat_id")
 
-    # global: best score per user
-    global_qs = (
-        TetrisScore.objects.values("user_id", "username")
-        .annotate(best=Max("score"))
-        .order_by("-best")[:10]
-    )
-    data_global = list(global_qs)
-
-    data_chat = []
-    if chat_id:
-        chat_qs = (
-            TetrisScore.objects.filter(chat_id=chat_id)
-            .values("user_id", "username")
-            .annotate(best=Max("score"))
-            .order_by("-best")[:10]
-        )
-        data_chat = list(chat_qs)
-
-    return JsonResponse({"global": data_global, "chat": data_chat})
-
+BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN")
 
 @csrf_exempt
 def submit_score(request):
     if request.method != "POST":
         return HttpResponseBadRequest("POST only")
 
-    data = json.loads(request.body.decode("utf-8"))
-    user_id = int(data.get("user_id", 0))
+    try:
+        data = json.loads(request.body.decode("utf-8"))
+    except json.JSONDecodeError:
+        return HttpResponseBadRequest("Invalid JSON")
+
+    user_id = int(data.get("user_id") or 0)
     chat_id = data.get("chat_id")
     username = (data.get("username") or "")[:255]
-    score = int(data.get("score", 0))
+    score = int(data.get("score") or 0)
     message_id = data.get("message_id")
     inline_message_id = data.get("inline_message_id")
 
-    if not user_id:
-        return HttpResponseBadRequest("user_id missing")
+    if not user_id or score <= 0:
+        return HttpResponseBadRequest("Missing user_id or score")
 
-    # Save to DB (global history)
+    # save in DB
     TetrisScore.objects.create(
         user_id=user_id,
         chat_id=chat_id or None,
@@ -86,12 +69,12 @@ def submit_score(request):
         score=score,
     )
 
-    # Update Telegram per-chat leaderboard (like LumberJack)
-    if BOT_TOKEN and score > 0:
+    # update per-chat leaderboard in Telegram
+    if BOT_TOKEN:
         payload = {
             "user_id": user_id,
             "score": score,
-            "force": True,          # overwrite lower scores
+            "force": True,
             "disable_edit_message": False,
         }
         if inline_message_id:
@@ -110,3 +93,26 @@ def submit_score(request):
             pass
 
     return JsonResponse({"ok": True})
+
+
+def leaderboard(request):
+    chat_id = request.GET.get("chat_id")
+
+    global_qs = (
+        TetrisScore.objects.values("user_id", "username")
+        .annotate(best=Max("score"))
+        .order_by("-best")[:10]
+    )
+    data_global = list(global_qs)
+
+    data_chat = []
+    if chat_id:
+        chat_qs = (
+            TetrisScore.objects.filter(chat_id=chat_id)
+            .values("user_id", "username")
+            .annotate(best=Max("score"))
+            .order_by("-best")[:10]
+        )
+        data_chat = list(chat_qs)
+
+    return JsonResponse({"global": data_global, "chat": data_chat})

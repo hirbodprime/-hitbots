@@ -8,10 +8,10 @@ class TetrisScore(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-      indexes = [
-          models.Index(fields=["chat_id"]),
-          models.Index(fields=["user_id"]),
-      ]
+        indexes = [
+            models.Index(fields=["user_id"]),
+            models.Index(fields=["chat_id"]),
+        ]
 
     def __str__(self):
         return f"{self.username or self.user_id}: {self.score}"
