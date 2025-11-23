@@ -34,8 +34,8 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      overflow: hidden;     /* page never scrolls */
-      touch-action: none;   /* all touches go to JS */
+      overflow: hidden;
+      touch-action: none;
     }
 
     .frame {
@@ -47,10 +47,10 @@
     }
 
     .cabinet {
-      /* side boxes smaller, center bigger */
-      width: min(540px, 100vw - 10px);
+      /* side columns tiny → center big */
+      width: min(580px, 100vw - 8px);
       display: grid;
-      grid-template-columns: 0.18fr 0.64fr 0.18fr;
+      grid-template-columns: 0.14fr 0.72fr 0.14fr;
       gap: 4px;
       padding: 8px;
       border-radius: 22px;
@@ -69,10 +69,10 @@
     }
 
     .side-panel {
-      min-width: 68px;              /* MUCH smaller */
+      min-width: 58px;
       background: linear-gradient(180deg, #efefef 0%, #cfcfcf 100%);
-      border-radius: 12px;
-      padding: 4px 4px 6px;
+      border-radius: 11px;
+      padding: 3px 3px 5px;
       border: 2px solid var(--panel-border);
       box-shadow:
         inset 0 0 0 1px rgba(255, 255, 255, 0.7),
@@ -91,16 +91,16 @@
     .side-screen {
       background: var(--panel-dark);
       color: var(--label-text);
-      border-radius: 9px;
+      border-radius: 8px;
       padding: 3px;
-      min-height: 30px;
+      min-height: 26px;
       display: flex;
       align-items: center;
       justify-content: center;
       font-family: "Courier New", monospace;
-      font-size: 10px;
+      font-size: 9px;
       box-shadow:
-        inset 0 0 8px rgba(0,0,0,.8),
+        inset 0 0 6px rgba(0,0,0,.8),
         inset 0 0 0 1px rgba(148,163,184,.7);
     }
 
@@ -113,10 +113,10 @@
 
     .side-stat {
       background: var(--panel-dark);
-      border-radius: 7px;
-      padding: 2px 4px;
+      border-radius: 6px;
+      padding: 2px 3px;
       font-family: "Courier New", monospace;
-      font-size: 10px;
+      font-size: 9px;
       text-align: left;
       box-shadow:
         inset 0 0 6px rgba(0,0,0,.8),
@@ -239,8 +239,8 @@
     }
 
     #nextCanvas, #holdCanvas {
-      width: 54px;
-      height: 44px;
+      width: 50px;
+      height: 42px;
     }
 
     .overlay {
@@ -320,6 +320,34 @@
       background: linear-gradient(180deg, #f97373 0%, #dc2626 100%);
       color: #111827;
     }
+
+    /* START overlay (leaderboards) */
+    .lb-columns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 8px;
+      font-size: 11px;
+      text-align: left;
+    }
+    .lb-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      margin-bottom: 4px;
+    }
+    .lb-list {
+      max-height: 150px;
+      overflow: auto;
+      padding: 4px 6px;
+      background: rgba(0,0,0,0.35);
+      border-radius: 8px;
+    }
+    .lb-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 1px 0;
+    }
   </style>
 </head>
 <body>
@@ -330,7 +358,7 @@
       <div class="side-panel">
         <div class="side-label">Hold</div>
         <div class="side-screen">
-          <canvas id="holdCanvas" width="54" height="44"></canvas>
+          <canvas id="holdCanvas" width="50" height="42"></canvas>
         </div>
       </div>
       <div class="side-panel">
@@ -367,26 +395,34 @@
       <div class="side-panel">
         <div class="side-label">Next</div>
         <div class="side-screen">
-          <canvas id="nextCanvas" width="54" height="44"></canvas>
+          <canvas id="nextCanvas" width="50" height="42"></canvas>
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- PAUSE MENU (with controls hint) -->
-<div class="overlay hidden" id="pauseOverlay">
+<!-- START OVERLAY: leaderboards + Play -->
+<div class="overlay" id="startOverlay">
   <div class="modal">
-    <div class="modal-title">Paused</div>
-    <div>Game is paused.</div>
-    <div class="modal-btn-row">
-      <button class="btn btn-primary" id="btnResume">Resume</button>
-      <button class="btn btn-danger" id="btnQuit">Quit</button>
+    <div class="modal-title">Tetris</div>
+    <div>Top players</div>
+    <div class="lb-columns">
+      <div>
+        <div class="lb-title">Global</div>
+        <div class="lb-list" id="lbGlobal"></div>
+      </div>
+      <div>
+        <div class="lb-title">This chat</div>
+        <div class="lb-list" id="lbChat"></div>
+      </div>
     </div>
-
+    <div class="modal-btn-row">
+      <button class="btn btn-primary" id="btnStartGame">Play</button>
+    </div>
     <div class="modal-hint">
       <strong>Controls:</strong><br>
-      • Swipe left / right: move piece<br>
+      • Swipe left / right: move<br>
       • Swipe down slowly: soft drop<br>
       • Swipe down fast: hard drop<br>
       • Swipe up: Hold / swap piece<br>
@@ -396,10 +432,24 @@
   </div>
 </div>
 
+<!-- PAUSE MENU -->
+<div class="overlay hidden" id="pauseOverlay">
+  <div class="modal">
+    <div class="modal-title">Paused</div>
+    <div>Game is paused.</div>
+    <div class="modal-btn-row">
+      <button class="btn btn-primary" id="btnResume">Resume</button>
+      <button class="btn btn-danger" id="btnQuit">Quit</button>
+    </div>
+  </div>
+</div>
+
 <script>
   const USER_ID = parseInt("{{ user_id|default:'0' }}") || 0;
   const CHAT_ID = parseInt("{{ chat_id|default:'0' }}") || 0;
   const USERNAME = "{{ username|default:'' }}";
+  const MESSAGE_ID = parseInt("{{ message_id|default:'0' }}") || 0;
+  const INLINE_MESSAGE_ID = "{{ inline_message_id|default:'' }}";
 
   const canvas = document.getElementById("tetris");
   const ctx = canvas.getContext("2d");
@@ -414,7 +464,7 @@
 
   function resizeCanvas() {
     const w = canvas.parentElement.clientWidth - 4;
-    const width = Math.max(150, Math.min(w, 260));   // bigger playfield now
+    const width = Math.max(190, Math.min(w, 320));   // bigger well
     const height = width * 2;
     canvas.width = width;
     canvas.height = height;
@@ -428,52 +478,23 @@
 
   const COLORS = [
     null,
-    "#00f0f0", // I
-    "#0000f0", // J
-    "#f0a000", // L
-    "#f0f000", // O
-    "#00f000", // S
-    "#f00000", // Z
-    "#a000f0", // T
+    "#00f0f0", "#0000f0", "#f0a000", "#f0f000",
+    "#00f000", "#f00000", "#a000f0",
   ];
-
   const SHAPES = {
     I: [[1,1,1,1]],
-    J: [
-      [2,0,0],
-      [2,2,2],
-    ],
-    L: [
-      [0,0,3],
-      [3,3,3],
-    ],
-    O: [
-      [4,4],
-      [4,4],
-    ],
-    S: [
-      [0,5,5],
-      [5,5,0],
-    ],
-    Z: [
-      [6,6,0],
-      [0,6,6],
-    ],
-    T: [
-      [0,7,0],
-      [7,7,7],
-    ],
+    J: [[2,0,0],[2,2,2]],
+    L: [[0,0,3],[3,3,3]],
+    O: [[4,4],[4,4]],
+    S: [[0,5,5],[5,5,0]],
+    Z: [[6,6,0],[0,6,6]],
+    T: [[0,7,0],[7,7,7]],
   };
   const SHAPE_KEYS = Object.keys(SHAPES);
-
-  function randomShapeMatrix() {
-    const key = SHAPE_KEYS[(Math.random()*SHAPE_KEYS.length)|0];
-    return SHAPES[key];
-  }
+  function randomShapeMatrix(){return SHAPES[SHAPE_KEYS[(Math.random()*SHAPE_KEYS.length)|0]];}
   function cloneMatrix(m){return m.map(r=>[...r]);}
   function createMatrix(w,h){const m=[];while(h--)m.push(new Array(w).fill(0));return m;}
-
-  function rotate(matrix, dir) {
+  function rotate(matrix,dir){
     const res = matrix[0].map((_,i)=>matrix.map(r=>r[i]));
     return dir>0 ? res.map(r=>r.reverse()) : res.reverse();
   }
@@ -523,7 +544,7 @@
       this.score = 0;
       this.lines = 0;
       this.level = 1;
-      this.dropInterval = 650;        // will get faster with level
+      this.dropInterval = 650;
       this.dropCounter = 0;
       this.lastTime = 0;
       this.gameOver = false;
@@ -541,7 +562,7 @@
 
     hold(){
       if (this.paused || this.gameOver) return;
-      if (this.holdUsed) return;  // only once per piece
+      if (this.holdUsed) return;
       this.holdUsed = true;
 
       if (!this.holdShape){
@@ -655,7 +676,7 @@
         this.score += pts*this.level;
         this.lines += cleared;
         this.level = 1 + Math.floor(this.lines/10);
-        this.dropInterval = Math.max(120,650-(this.level-1)*40);  // auto speed-up
+        this.dropInterval = Math.max(120,650-(this.level-1)*40);
         this.updateHUD();
       }
     }
@@ -695,7 +716,6 @@
       ctx.fillStyle="#000";
       ctx.fillRect(0,0,canvas.width,canvas.height);
 
-      // grid
       ctx.strokeStyle="rgba(55,65,81,0.4)";
       ctx.lineWidth=0.5;
       for(let x=0;x<=COLS;x++){
@@ -707,17 +727,13 @@
         ctx.beginPath();ctx.moveTo(0,py);ctx.lineTo(canvas.width,py);ctx.stroke();
       }
 
-      // board
       this.drawMatrix(this.matrix,{x:0,y:0});
 
-      // ghost shadow
       const ghostPos={x:this.piece.pos.x,y:this.piece.pos.y};
       while(!this.collides({matrix:this.piece.matrix,pos:{x:ghostPos.x,y:ghostPos.y+1}})){
         ghostPos.y++;
       }
       this.drawMatrixGhost(this.piece.matrix, ghostPos);
-
-      // active piece
       this.drawMatrix(this.piece.matrix,this.piece.pos);
     }
 
@@ -754,7 +770,7 @@
     }
 
     async sendScore(){
-      if(!USER_ID||!CHAT_ID) return;
+      if(!USER_ID) return;
       try{
         await fetch("/tetris/submit-score/",{
           method:"POST",
@@ -764,6 +780,8 @@
             chat_id:CHAT_ID,
             username:USERNAME,
             score:this.score,
+            message_id: MESSAGE_ID,
+            inline_message_id: INLINE_MESSAGE_ID,
           }),
         });
       }catch(e){console.error("submit-score error",e);}
@@ -781,7 +799,7 @@
   }
   loop();
 
-  // Keyboard (desktop)
+  // keyboard
   document.addEventListener("keydown", e=>{
     if(board.gameOver||board.paused) return;
     if(e.key==="ArrowLeft") board.piece.move(-1,0);
@@ -792,14 +810,8 @@
     else if(e.key==="Escape") openPause();
   });
 
-  // MOBILE TOUCH:
-  // - drag left/right: smooth horizontal movement
-  // - hold finger: continuous fast soft drop
-  // - swipe down fast: hard drop
-  // - swipe down slow: soft drop
-  // - swipe up: hold / swap
-  // - tap: rotate
-  let touchActive=false,startX=0,startY=0,startTime=0,dragLastX=0,holdDropId=null;
+  // touch – drag left/right, swipe down / up, tap rotate
+  let touchActive=false,startX=0,startY=0,startTime=0,dragLastX=0;
 
   canvas.addEventListener("touchstart", e=>{
     if(board.gameOver) return;
@@ -810,14 +822,6 @@
     dragLastX = startX;
     startTime=performance.now();
     touchActive=true;
-
-    // continuous fast soft drop while finger is pressed
-    holdDropId = setInterval(()=>{
-      if(!board.gameOver && !board.paused){
-        board.softDropStep();
-      }
-    },90);
-
     e.preventDefault();
   });
 
@@ -826,12 +830,9 @@
     const t=e.touches[0];
     const r=canvas.getBoundingClientRect();
     const x=t.clientX-r.left;
-    const y=t.clientY-r.top;
-
     const dx = x - dragLastX;
     const stepX = BLOCK * 0.6;
 
-    // smooth drag for horizontal movement
     if (dx > stepX) {
       let steps = Math.floor(dx / stepX);
       while (steps-- > 0) board.piece.move(1,0);
@@ -848,7 +849,6 @@
   canvas.addEventListener("touchend", e=>{
     if(!touchActive || board.gameOver) return;
     touchActive=false;
-    if (holdDropId){ clearInterval(holdDropId); holdDropId=null; }
 
     const r=canvas.getBoundingClientRect();
     const t=e.changedTouches[0];
@@ -861,33 +861,68 @@
     const absX=Math.abs(dx), absY=Math.abs(dy);
 
     if(absY>absX && dy<-22){
-      // swipe up => hold
       board.hold();
     } else if(absY>absX && dy>18){
       const speed = dy/dt;
       if(speed>0.8 && dy>45) board.hardDrop();
       else board.softDropStep();
     } else if(absX>absY && absX>10){
-      // horizontal swipe end: already moved on move, so nothing extra
+      // already moved during drag
     } else {
-      // tap => rotate
       if(!board.paused) board.piece.rotate(1);
     }
 
     e.preventDefault();
   });
 
-  // Pause menu
+  // pause + quit
   const pauseOverlay=document.getElementById("pauseOverlay");
   function openPause(){board.paused=true;pauseOverlay.classList.remove("hidden");}
   function closePause(){pauseOverlay.classList.add("hidden");board.paused=false;}
 
   document.getElementById("pauseBtn").addEventListener("click",openPause);
   document.getElementById("btnResume").addEventListener("click",closePause);
-  document.getElementById("btnQuit").addEventListener("click",()=>{
+  document.getElementById("btnQuit").addEventListener("click",async ()=>{
+    await board.sendScore();      // save score even if user quits
     board=new Board();
     closePause();
   });
+
+  // ====== LEADERBOARD (start overlay) ======
+  const startOverlay = document.getElementById("startOverlay");
+  const lbGlobal = document.getElementById("lbGlobal");
+  const lbChat = document.getElementById("lbChat");
+
+  function renderLB(listElem, data){
+    listElem.innerHTML = "";
+    if(!data || !data.length){
+      listElem.textContent = "No scores yet.";
+      return;
+    }
+    data.forEach((row, idx)=>{
+      const div = document.createElement("div");
+      div.className = "lb-item";
+      const name = row.username || ("Player " + row.user_id);
+      div.innerHTML = `<span>${idx+1}. ${name}</span><span>${row.best}</span>`;
+      listElem.appendChild(div);
+    });
+  }
+
+  async function loadLeaderboards(){
+    try{
+      const res = await fetch(`/tetris/leaderboard/?chat_id=${CHAT_ID||""}`);
+      if(!res.ok) return;
+      const data = await res.json();
+      renderLB(lbGlobal, data.global || []);
+      renderLB(lbChat, data.chat || []);
+    }catch(e){console.error("leaderboard error",e);}
+  }
+
+  document.getElementById("btnStartGame").addEventListener("click",()=>{
+    startOverlay.classList.add("hidden");
+  });
+
+  loadLeaderboards();
 </script>
 </body>
 </html>
