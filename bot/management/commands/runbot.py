@@ -2,6 +2,8 @@
 import asyncio
 from django.core.management.base import BaseCommand
 from bot.bot import build_application
+# Optional: if you want to specify allowed_updates explicitly:
+# from telegram import Update
 
 
 class Command(BaseCommand):
@@ -9,4 +11,9 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         app = build_application()
-        asyncio.run(app.run_polling(allowed_updates=app.resolve_all_updates()))
+
+        # Simple version – let PTB decide allowed_updates
+        asyncio.run(app.run_polling())
+
+        # If you prefer to be explicit, you can instead do:
+        # asyncio.run(app.run_polling(allowed_updates=Update.ALL_TYPES))
