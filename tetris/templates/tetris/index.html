@@ -682,12 +682,13 @@ class Board {
 
     // ---- gravity / speed config ----
     this.dropBase = 650;          // ms at score 0
-    this.dropMin = 120;           // fastest speed
-    this.dropStepScore = 500;     // every 500 points → faster
+    this.dropMin = 60;           // fastest speed
+    this.dropStepScore = 200;     // every 500 points → faster
     this.dropStepAmount = 40;     // how much we reduce interval each step
     this.speedStage = 0;          // current speed stage
     this.dropInterval = this.dropBase;
     // --------------------------------
+    this.nextAutosaveScore = 500;   // first autosave at 500 points
 
     this.dropCounter = 0;
     this.lastTime = 0;
@@ -795,6 +796,14 @@ g.addColorStop(1, "rgba(0,0,0,0.65)");
       this.dropInterval = newInterval;
       // console.log("speed stage:", this.speedStage, "dropInterval:", this.dropInterval);
     }
+checkAutosave() {
+  if (!USER_ID) return;              // ignore guests
+  if (this.score >= this.nextAutosaveScore) {
+    // fire-and-forget; no await so gameplay stays smooth
+    this.sendScore();
+    this.nextAutosaveScore += 500;   // next checkpoint
+  }
+}
 
     collides(piece){
       const m=piece.matrix, o=piece.pos;
@@ -841,6 +850,8 @@ sweep(){
     this.updateSpeed();
 
     this.updateHUD();
+      this.checkAutosave();   // 🔥 autosave every 500 points
+
   }
 }
 
