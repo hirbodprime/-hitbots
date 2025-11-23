@@ -74,6 +74,7 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "static_root"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+TETRIS_GAME_URL = "https://hirbots.com/tetris/"
 
 
 SITE_URL = os.getenv("SITE_URL", "http://localhost:8000")
