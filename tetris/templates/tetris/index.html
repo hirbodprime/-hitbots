@@ -668,25 +668,36 @@ const COLORS = [
     }
   }
 
-  class Board {
-    constructor(){
-      this.matrix = createMatrix(COLS, ROWS);
-      this.nextShape = randomShapeMatrix();
-      this.holdShape = null;
-      this.holdUsed = false;
-      this.spawnFromNext();
-      this.score = 0;
-      this.lines = 0;
-      this.level = 1;
-      this.dropInterval = 650;
-      this.dropCounter = 0;
-      this.lastTime = 0;
-      this.gameOver = false;
-      this.paused = false;
-      this.updateHUD();
-      this.drawNext();
-      this.drawHold();
-    }
+class Board {
+  constructor(){
+    this.matrix = createMatrix(COLS, ROWS);
+    this.nextShape = randomShapeMatrix();
+    this.holdShape = null;
+    this.holdUsed = false;
+    this.spawnFromNext();
+
+    this.score = 0;
+    this.lines = 0;
+    this.level = 1;               // still based on lines, just for display
+
+    // ---- gravity / speed config ----
+    this.dropBase = 650;          // ms at score 0
+    this.dropMin = 120;           // fastest speed
+    this.dropStepScore = 500;     // every 500 points → faster
+    this.dropStepAmount = 40;     // how much we reduce interval each step
+    this.speedStage = 0;          // current speed stage
+    this.dropInterval = this.dropBase;
+    // --------------------------------
+
+    this.dropCounter = 0;
+    this.lastTime = 0;
+    this.gameOver = false;
+    this.paused = false;
+    this.updateHUD();
+    this.drawNext();
+    this.drawHold();
+  }
+
 
     spawnFromNext(){
       this.piece = new Piece(this, this.nextShape);
@@ -772,6 +783,18 @@ g.addColorStop(1, "rgba(0,0,0,0.65)");
       document.getElementById("lines").innerText = this.lines;
       document.getElementById("level").innerText = this.level;
     }
+    updateSpeed(){
+      const stage = Math.floor(this.score / this.dropStepScore);
+      if (stage === this.speedStage) return;
+
+      this.speedStage = stage;
+      const newInterval = Math.max(
+        this.dropMin,
+        this.dropBase - this.speedStage * this.dropStepAmount
+      );
+      this.dropInterval = newInterval;
+      // console.log("speed stage:", this.speedStage, "dropInterval:", this.dropInterval);
+    }
 
     collides(piece){
       const m=piece.matrix, o=piece.pos;
@@ -794,26 +817,33 @@ g.addColorStop(1, "rgba(0,0,0,0.65)");
         });
       });
     }
-
-    sweep(){
-      let cleared=0;
-      outer: for (let y=ROWS-1;y>=0;y--){
-        for (let x=0;x<COLS;x++){
-          if (!this.matrix[y][x]) continue outer;
-        }
-        const row=this.matrix.splice(y,1)[0].fill(0);
-        this.matrix.unshift(row);
-        y++; cleared++;
-      }
-      if(cleared){
-        const pts=[0,40,100,300,1200][cleared]||0;
-        this.score += pts*this.level;
-        this.lines += cleared;
-        this.level = 1 + Math.floor(this.lines/10);
-        this.dropInterval = Math.max(120,650-(this.level-1)*40);
-        this.updateHUD();
-      }
+sweep(){
+  let cleared = 0;
+  outer: for (let y = ROWS - 1; y >= 0; y--){
+    for (let x = 0; x < COLS; x++){
+      if (!this.matrix[y][x]) continue outer;
     }
+    const row = this.matrix.splice(y, 1)[0].fill(0);
+    this.matrix.unshift(row);
+    y++;
+    cleared++;
+  }
+
+  if (cleared){
+    const pts = [0, 40, 100, 300, 1200][cleared] || 0;
+    this.score += pts * this.level;
+    this.lines += cleared;
+
+    // level can still be based on lines for display only
+    this.level = 1 + Math.floor(this.lines / 10);
+
+    // NEW: speed based purely on score
+    this.updateSpeed();
+
+    this.updateHUD();
+  }
+}
+
 
     hardDrop(){
       if (this.gameOver||this.paused) return;
