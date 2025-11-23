@@ -51,6 +51,8 @@ def submit_score(request):
     except json.JSONDecodeError:
         return HttpResponseBadRequest("Invalid JSON")
 
+    print("submit_score raw data:", data)  # DEBUG
+
     user_id = int(data.get("user_id") or 0)
     chat_id = data.get("chat_id")
     username = (data.get("username") or "")[:255]
@@ -58,18 +60,21 @@ def submit_score(request):
     message_id = data.get("message_id")
     inline_message_id = data.get("inline_message_id")
 
+    print("parsed:", user_id, chat_id, username, score, message_id, inline_message_id)  # DEBUG
+
     if not user_id or score <= 0:
+        print("submit_score rejected: missing user_id or score <= 0")  # DEBUG
         return HttpResponseBadRequest("Missing user_id or score")
 
     # save in DB
-    TetrisScore.objects.create(
+    obj = TetrisScore.objects.create(
         user_id=user_id,
         chat_id=chat_id or None,
         username=username,
         score=score,
     )
+    print("TetrisScore created with id:", obj.id)  # DEBUG
 
-    # update per-chat leaderboard in Telegram
     if BOT_TOKEN:
         payload = {
             "user_id": user_id,
@@ -84,16 +89,16 @@ def submit_score(request):
             payload["message_id"] = message_id
 
         try:
-            requests.post(
+            r = requests.post(
                 f"https://api.telegram.org/bot{BOT_TOKEN}/setGameScore",
                 json=payload,
                 timeout=5,
             )
-        except requests.RequestException:
-            pass
+            print("setGameScore status:", r.status_code, r.text[:200])  # DEBUG
+        except requests.RequestException as e:
+            print("setGameScore error:", e)
 
     return JsonResponse({"ok": True})
-
 
 def leaderboard(request):
     chat_id = request.GET.get("chat_id")

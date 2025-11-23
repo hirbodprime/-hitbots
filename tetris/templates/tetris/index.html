@@ -855,25 +855,41 @@ function resizeCanvas() {
       });
     }
 
-  async sendScore(){
-    if(!USER_ID) return;
-    try{
-      await fetch("/tetris/submit-score/",{
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({
-          user_id: USER_ID,
-          chat_id: CHAT_ID,
-          username: USERNAME,
-          score: this.score,
-          message_id: MESSAGE_ID,
-          inline_message_id: INLINE_MESSAGE_ID,
-        }),
-      });
-    }catch(e){
-      console.error("submit-score error", e);
-    }
+async sendScore() {
+  if (!USER_ID) {
+    console.warn("sendScore: USER_ID is 0 — not sending");
+    return;
   }
+
+  const payload = {
+    user_id: USER_ID,
+    chat_id: CHAT_ID,
+    username: USERNAME,
+    score: this.score,
+    message_id: MESSAGE_ID,
+    inline_message_id: INLINE_MESSAGE_ID,
+  };
+
+  console.log("sendScore payload:", payload);
+
+  try {
+    const res = await fetch("/games/tetris/submit-score/", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify(payload),
+    });
+
+    console.log("submit-score status:", res.status);
+
+    if (!res.ok) {
+      const text = await res.text();
+      console.error("submit-score failed:", text);
+    }
+  } catch (e) {
+    console.error("submit-score error:", e);
+  }
+}
+
 
   }
 
@@ -1000,7 +1016,7 @@ document.getElementById("btnQuit").addEventListener("click", async () => {
 
   async function loadLeaderboards(){
     try{
-      const res = await fetch(`/tetris/leaderboard/?chat_id=${CHAT_ID||""}`);
+      const res = await fetch(`/games/tetris/leaderboard/?chat_id=${CHAT_ID||""}`);
       if(!res.ok) return;
       const data = await res.json();
       renderLB(lbGlobal, data.global || []);

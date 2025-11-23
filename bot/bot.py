@@ -33,7 +33,7 @@ def build_game_url(
     message_id: int | None = None,
     inline_message_id: str | None = None,
 ) -> str:
-    base = settings.TETRIS_GAME_URL.rstrip("/")  # e.g. "https://hirbots.com/tetris/"
+    base = settings.TETRIS_GAME_URL.rstrip("/")  # e.g. "https://hirbots.com/games/tetris/"
 
     params = [
         f"user_id={user_id}",
